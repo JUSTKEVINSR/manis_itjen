@@ -15,6 +15,15 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.*')">
+                        {{ __('Staff') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('inventory.index')" :active="request()->routeIs('inventory.*')">
+                        {{ __('Inventory') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('inventory-out.index')" :active="request()->routeIs('inventory-out.*')">
+                        {{ __('Inventory Out') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -69,6 +78,15 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.*')">
+                {{ __('Staff') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('inventory.index')" :active="request()->routeIs('inventory.*')">
+                {{ __('Inventory') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('inventory-out.index')" :active="request()->routeIs('inventory-out.*')">
+                {{ __('Inventory Out') }}
             </x-responsive-nav-link>
         </div>
 
