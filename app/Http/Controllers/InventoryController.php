@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Inventory;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class InventoryController extends Controller
 {
@@ -12,8 +13,9 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        $inventories = Inventory::latest()->paginate(10);
-        return view('inventory.index', compact('inventories'));
+        return Inertia::render('inventory data/index', [
+            'inventories' => Inventory::latest()->get()
+        ]);
     }
 
     /**
@@ -21,7 +23,7 @@ class InventoryController extends Controller
      */
     public function create()
     {
-        return view('inventory.create');
+        //
     }
 
     /**
@@ -40,7 +42,7 @@ class InventoryController extends Controller
 
         Inventory::create($validated);
 
-        return redirect()->route('inventory.index')->with('success', 'Item added to inventory successfully.');
+        return redirect()->route('inventory-data')->with('success', 'Item added to inventory successfully.');
     }
 
     /**
@@ -56,7 +58,7 @@ class InventoryController extends Controller
      */
     public function edit(Inventory $inventory)
     {
-        return view('inventory.edit', compact('inventory'));
+        //
     }
 
     /**
@@ -75,7 +77,7 @@ class InventoryController extends Controller
 
         $inventory->update($validated);
 
-        return redirect()->route('inventory.index')->with('success', 'Inventory item updated successfully.');
+        return redirect()->route('inventory-data')->with('success', 'Inventory item updated successfully.');
     }
 
     /**
@@ -84,6 +86,6 @@ class InventoryController extends Controller
     public function destroy(Inventory $inventory)
     {
         $inventory->delete();
-        return redirect()->route('inventory.index')->with('success', 'Inventory item deleted successfully.');
+        return redirect()->route('inventory-data')->with('success', 'Inventory item deleted successfully.');
     }
 }

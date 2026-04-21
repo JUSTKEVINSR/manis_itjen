@@ -6,7 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class InventoryOut extends Model
 {
-    protected $fillable = ['inventory_id', 'staff_id', 'quantity', 'date_out', 'notes'];
+    protected $fillable = [
+        'inventory_id', 
+        'staff_id', 
+        'quantity', 
+        'date_out', 
+        'notes',
+        'duration',
+        'return_date',
+        'kelengkapan',
+        'status'
+    ];
 
     public function inventory()
     {

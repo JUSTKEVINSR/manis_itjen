@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Staff extends Model
 {
-    protected $fillable = ['name', 'nik', 'jabatan', 'departemen', 'phone'];
+    protected $fillable = ['name', 'nik', 'jabatan', 'departemen', 'phone', 'pangkat'];
 
     public function inventoryOuts()
     {
