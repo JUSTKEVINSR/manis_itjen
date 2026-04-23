@@ -8,11 +8,11 @@ import InputError from '@/Components/InputError';
 import SecondaryButton from '@/Components/SecondaryButton';
 import PrimaryButton from '@/Components/PrimaryButton';
 
-export default function InventoryOut({ inventoryOuts, inventories, staffs }: { inventoryOuts: any[], inventories: any[], staffs: any[] }) {
+export default function InventoryRecall({ inventoryRecalls, inventories, staffs }: { inventoryRecalls: any[], inventories: any[], staffs: any[] }) {
     const [confirmingAddition, setConfirmingAddition] = useState(false);
     const [confirmingEdition, setConfirmingEdition] = useState(false);
     const [confirmingDeletion, setConfirmingDeletion] = useState(false);
-    const [selectedInventoryOut, setSelectedInventoryOut] = useState<any>(null);
+    const [selectedInventoryRecall, setSelectedInventoryRecall] = useState<any>(null);
 
     const { data, setData, post, patch, delete: destroy, processing, errors, reset } = useForm({
         inventory_id: '',
@@ -28,7 +28,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
 
     const addInventoryOut: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('inventory-out.store'), {
+        post(route('inventory-recall.store'), {
             onSuccess: () => {
                 setConfirmingAddition(false);
                 reset();
@@ -38,7 +38,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
 
     const editInventoryOut: FormEventHandler = (e) => {
         e.preventDefault();
-        patch(route('inventory-out.update', selectedInventoryOut.id), {
+        patch(route('inventory-recall.update', selectedInventoryRecall.id), {
             onSuccess: () => {
                 setConfirmingEdition(false);
                 reset();
@@ -48,7 +48,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
 
     const deleteInventoryOut: FormEventHandler = (e) => {
         e.preventDefault();
-        destroy(route('inventory-out.destroy', selectedInventoryOut.id), {
+        destroy(route('inventory-recall.destroy', selectedInventoryRecall.id), {
             onSuccess: () => {
                 setConfirmingDeletion(false);
                 reset();
@@ -57,7 +57,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
     };
 
     const openEditModal = (io: any) => {
-        setSelectedInventoryOut(io);
+        setSelectedInventoryRecall(io);
         setData({
             inventory_id: io.inventory_id,
             staff_id: io.staff_id || '',
@@ -73,7 +73,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
     };
 
     const openDeleteModal = (io: any) => {
-        setSelectedInventoryOut(io);
+        setSelectedInventoryRecall(io);
         setConfirmingDeletion(true);
     };
 
@@ -87,7 +87,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
     const handleFileUpload = (id: number, file: File | undefined) => {
         if (!file) return;
 
-        router.post(route('inventory-out.upload-surat', id), {
+        router.post(route('inventory-recall.upload-surat', id), {
             _method: 'post',
             surat_permohonan: file,
         }, {
@@ -99,11 +99,11 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Inventory Out Bub
+                    Inventory Recall (Penarikan Barang)
                 </h2>
             }
         >
-            <Head title="Inventory Bub" />
+            <Head title="Inventory Recall" />
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -114,7 +114,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
                                     className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
                                     onClick={() => setConfirmingAddition(true)}
                                 >
-                                    Push Out Item
+                                    Recall Item (Tarik Barang)
                                 </button>
                             </div>
                             <div className="overflow-x-auto">
@@ -136,29 +136,29 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100 border-t border-gray-100">
-                                        {inventoryOuts.map((io, index) => (
-                                            <tr key={io.id} className="hover:bg-gray-50">
+                                        {inventoryRecalls.map((ir, index) => (
+                                            <tr key={ir.id} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4">{index + 1}</td>
-                                                <td className="px-6 py-4">{io.staff?.nik || '-'}</td>
-                                                <td className="px-6 py-4">{io.staff?.name || 'Unknown'}</td>
-                                                <td className="px-6 py-4">{io.staff?.jabatan || '-'}</td>
-                                                <td className="px-6 py-4">{io.inventory?.item_name}</td>
-                                                <td className="px-6 py-4">{io.duration || '-'}</td>
-                                                <td className="px-6 py-4">{io.return_date || '-'}</td>
-                                                <td className="px-6 py-4">{io.kelengkapan || '-'}</td>
-                                                <td className="px-6 py-4">{io.surat_permohonan_raw || ' disini surat permohonan raw'}</td>
+                                                <td className="px-6 py-4">{ir.staff?.nik || '-'}</td>
+                                                <td className="px-6 py-4">{ir.staff?.name || 'Unknown'}</td>
+                                                <td className="px-6 py-4">{ir.staff?.jabatan || '-'}</td>
+                                                <td className="px-6 py-4">{ir.inventory?.item_name}</td>
+                                                <td className="px-6 py-4">{ir.duration || '-'}</td>
+                                                <td className="px-6 py-4">{ir.return_date || '-'}</td>
+                                                <td className="px-6 py-4">{ir.kelengkapan || '-'}</td>
+                                                <td className="px-6 py-4">{ir.surat_permohonan_raw || ' disini surat permohonan raw'}</td>
                                                 <td className="px-6 py-4">
-                                                    {io.surat_permohonan ? (
+                                                    {ir.surat_permohonan ? (
                                                         <div className="flex items-center gap-2">
                                                             <a
-                                                                href={`/storage/${io.surat_permohonan}`}
+                                                                href={`/storage/${ir.surat_permohonan}`}
                                                                 target="_blank"
                                                                 className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs font-medium"
                                                             >
                                                                 View PDF
                                                             </a>
                                                             <button
-                                                                onClick={() => document.getElementById(`upload-${io.id}`)?.click()}
+                                                                onClick={() => document.getElementById(`upload-${ir.id}`)?.click()}
                                                                 className="text-gray-400 hover:text-gray-600"
                                                                 title="Change File"
                                                             >
@@ -169,45 +169,45 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
                                                         </div>
                                                     ) : (
                                                         <button
-                                                            onClick={() => document.getElementById(`upload-${io.id}`)?.click()}
+                                                            onClick={() => document.getElementById(`upload-${ir.id}`)?.click()}
                                                             className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-xs font-medium"
                                                         >
                                                             Upload PDF
                                                         </button>
                                                     )}
                                                     <input
-                                                        id={`upload-${io.id}`}
+                                                        id={`upload-${ir.id}`}
                                                         type="file"
                                                         className="hidden"
                                                         accept=".pdf"
-                                                        onChange={(e) => handleFileUpload(io.id, e.target.files?.[0])}
+                                                        onChange={(e) => handleFileUpload(ir.id, e.target.files?.[0])}
                                                     />
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`px-2 py-1 rounded-full text-xs ${io.status === 'Borrowed' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
-                                                        {io.status}
+                                                    <span className={`px-2 py-1 rounded-full text-xs ${ir.status === 'Borrowed' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
+                                                        {ir.status}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 flex gap-2">
                                                     <button
                                                         className="text-blue-600 hover:text-blue-900"
-                                                        onClick={() => openEditModal(io)}
+                                                        onClick={() => openEditModal(ir)}
                                                     >
                                                         Edit
                                                     </button>
                                                     <button
                                                         className="text-red-600 hover:text-red-900"
-                                                        onClick={() => openDeleteModal(io)}
+                                                        onClick={() => openDeleteModal(ir)}
                                                     >
                                                         Delete
                                                     </button>
                                                 </td>
                                             </tr>
                                         ))}
-                                        {inventoryOuts.length === 0 && (
+                                        {inventoryRecalls.length === 0 && (
                                             <tr>
                                                 <td colSpan={11} className="px-6 py-4 text-center text-gray-500">
-                                                    Tidak ada data pengeluaran barang.
+                                                    Tidak ada data penarikan barang.
                                                 </td>
                                             </tr>
                                         )}
@@ -223,7 +223,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
             <Modal show={confirmingAddition} onClose={closeModal}>
                 <form onSubmit={addInventoryOut} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">
-                        Push Item (Pengeluaran Barang)
+                        Recall Item (Penarikan Barang)
                     </h2>
 
                     <div className="grid grid-cols-2" style={{ gap: '10px' }}>
@@ -375,7 +375,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
             <Modal show={confirmingEdition} onClose={closeModal}>
                 <form onSubmit={editInventoryOut} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">
-                        Edit Pengeluaran Barang
+                        Edit Penarikan Barang
                     </h2>
 
                     <div className="mt-6">
@@ -447,11 +447,11 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
             <Modal show={confirmingDeletion} onClose={closeModal}>
                 <form onSubmit={deleteInventoryOut} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">
-                        Hapus Pengeluaran Barang
+                        Hapus Penarikan Barang
                     </h2>
 
                     <p className="mt-1 text-sm text-gray-600">
-                        Apakah Anda yakin ingin menghapus catatan pengeluaran ini?
+                        Apakah Anda yakin ingin menghapus catatan penarikan ini?
                     </p>
 
                     <div className="mt-6 flex justify-end">

@@ -15,7 +15,8 @@ class InventoryOut extends Model
         'duration',
         'return_date',
         'kelengkapan',
-        'status'
+        'status',
+        'surat_permohonan'
     ];
 
     public function inventory()

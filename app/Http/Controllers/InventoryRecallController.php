@@ -8,22 +8,14 @@ use App\Models\Staff;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class InventoryOutController extends Controller
+class InventoryRecallController extends Controller
 {
     public function index()
     {
-        return Inertia::render('inventory out/index', [
-            'inventoryOuts' => InventoryOut::with(['inventory', 'staff'])->latest()->get(),
-            'inventories' => Inventory::where('quantity', '>', 0)->get(),
-            'staffs' => Staff::all()
-        ]);
-    }
-
-    public function recallIndex()
-    {
         return Inertia::render('inventory recall/index', [
+            'inventoryRecalls' => InventoryOut::with(['inventory', 'staff'])->latest()->get(),
             'inventories' => Inventory::all(),
-            'borrowedItems' => InventoryOut::with(['inventory', 'staff'])->where('status', 'Borrowed')->get()
+            'staffs' => Staff::all()
         ]);
     }
 
@@ -47,13 +39,13 @@ class InventoryOutController extends Controller
         ]);
 
         $inventory = Inventory::findOrFail($validated['inventory_id']);
-        
+
         if ($inventory->quantity < $validated['quantity']) {
             return back()->withErrors(['quantity' => 'Not enough stock available.'])->withInput();
         }
 
         InventoryOut::create($validated);
-        
+
         // Deduct from inventory stock
         $inventory->decrement('quantity', $validated['quantity']);
 

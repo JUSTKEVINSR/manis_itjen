@@ -80,6 +80,39 @@ export default function Authenticated({
                             Inventory Out Bub
                         </Link>
 
+                        <Link
+                            href={route('inventory-recall')}
+                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${route().current('inventory-recall')
+                                ? 'bg-indigo-50 text-indigo-700'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
+                        >
+
+                            Inventory Recall (Penarikan)
+                        </Link>
+
+                        <Link
+                            href={route('file-tracking')}
+                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${route().current('file-tracking')
+                                ? 'bg-indigo-50 text-indigo-700'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
+                        >
+
+                            File Tracking
+                        </Link>
+
+                        <Link
+                            href={route('templates.index')}
+                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${route().current('templates.index')
+                                ? 'bg-indigo-50 text-indigo-700'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
+                        >
+
+                            Manage Templates
+                        </Link>
+
 
 
 

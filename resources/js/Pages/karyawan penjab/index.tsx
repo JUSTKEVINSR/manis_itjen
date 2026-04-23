@@ -88,7 +88,7 @@ export default function KaryawanPenjab({ staffs, currentPenjab }: Props) {
                             <form onSubmit={submit}>
                                 <div className="flex flex-wrap gap-6 mb-6">
                                     <div className="flex-1 min-w-[300px]">
-                                        <InputLabel htmlFor="staff_select_1" value="Karyawan 1" />
+                                        <InputLabel htmlFor="staff_select_1" value="Karyawan Penanggung Jawab 1" />
                                         <select
                                             id="staff_select_1"
                                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
@@ -105,7 +105,7 @@ export default function KaryawanPenjab({ staffs, currentPenjab }: Props) {
                                     </div>
 
                                     <div className="flex-1 min-w-[300px]">
-                                        <InputLabel htmlFor="staff_select_2" value="Karyawan 2" />
+                                        <InputLabel htmlFor="staff_select_2" value="Karyawan Penanggung Jawab 2" />
                                         <select
                                             id="staff_select_2"
                                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
@@ -122,7 +122,7 @@ export default function KaryawanPenjab({ staffs, currentPenjab }: Props) {
                                     </div>
 
                                     <div className="flex items-end gap-2">
-                                        <button 
+                                        <button
                                             type="submit"
                                             className="px-6 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors shadow-sm disabled:opacity-50"
                                             disabled={processing}
@@ -135,7 +135,7 @@ export default function KaryawanPenjab({ staffs, currentPenjab }: Props) {
                                     </div>
                                 </div>
                             </form>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     {data.staff1 && renderStaffDetail(data.staff1)}

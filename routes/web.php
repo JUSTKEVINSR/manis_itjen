@@ -38,12 +38,30 @@ Route::patch('/inventory-data/{inventory}', [InventoryController::class, 'update
 Route::delete('/inventory-data/{inventory}', [InventoryController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory.destroy');
 
 use App\Http\Controllers\InventoryOutController;
+use App\Http\Controllers\InventoryRecallController;
+use App\Http\Controllers\FileTrackingController;
+use App\Http\Controllers\TemplateController;
 
 Route::get('/inventory-out', [InventoryOutController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-out');
 Route::get('/inventory-recall', [InventoryOutController::class, 'recallIndex'])->middleware(['auth', 'verified'])->name('inventory-recall');
 Route::post('/inventory-out', [InventoryOutController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory-out.store');
 Route::patch('/inventory-out/{inventoryOut}', [InventoryOutController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-out.update');
 Route::delete('/inventory-out/{inventoryOut}', [InventoryOutController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-out.destroy');
+Route::post('/inventory-out/{inventoryOut}/upload-surat', [InventoryOutController::class, 'uploadSurat'])->middleware(['auth', 'verified'])->name('inventory-out.upload-surat');
+
+
+Route::get('/inventory-recall', [InventoryRecallController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-recall');
+Route::post('/inventory-recall', [InventoryRecallController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory-recall.store');
+Route::patch('/inventory-recall/{inventoryRecall}', [InventoryRecallController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-recall.update');
+Route::delete('/inventory-recall/{inventoryRecall}', [InventoryRecallController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-recall.destroy');
+Route::post('/inventory-recall/{inventoryRecall}/upload-surat', [InventoryRecallController::class, 'uploadSurat'])->middleware(['auth', 'verified'])->name('inventory-recall.upload-surat');
+
+
+Route::get('/file-tracking', [FileTrackingController::class, 'index'])->middleware(['auth', 'verified'])->name('file-tracking');
+
+Route::get('/templates', [TemplateController::class, 'index'])->middleware(['auth', 'verified'])->name('templates.index');
+Route::post('/templates', [TemplateController::class, 'store'])->middleware(['auth', 'verified'])->name('templates.store');
+Route::delete('/templates/{template}', [TemplateController::class, 'destroy'])->middleware(['auth', 'verified'])->name('templates.destroy');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
