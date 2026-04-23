@@ -12,122 +12,155 @@ export default function Authenticated({
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+    const [isMinimized, setIsMinimized] = useState(false);
+
 
     return (
-        <div className="min-h-screen bg-gray-100 flex">
+        <div className="min-h-screen bg-gray-50 flex">
+
             {/* Sidebar (Desktop) */}
-            <aside className="hidden w-64 bg-white border-r border-gray-200 sm:flex sm:flex-col shrink-0 sticky top-0 h-screen">
-                <div className="flex h-16 shrink-0 items-center justify-center border-b border-gray-100 px-6">
-                    <Link href="/">
-                        <ApplicationLogo className="block h-9 w-auto fill-current text-indigo-600" />
-                    </Link>
+            <aside
+                className={`hidden bg-white border-r border-gray-200 sm:flex sm:flex-col shrink-0 sticky top-0 h-screen transition-all duration-300 ease-in-out ${isMinimized ? 'w-20' : 'w-64'
+                    }`}
+            >
+                <div className={`flex h-16 shrink-0 items-center border-b border-gray-100 px-4 ${isMinimized ? 'justify-center' : 'justify-between'
+                    }`}>
+                    {!isMinimized && (
+                        <Link href="/" className="flex items-center gap-3 overflow-hidden whitespace-nowrap">
+                            <ApplicationLogo className="block h-9 w-auto fill-current text-indigo-600" />
+                            <span className="font-bold text-xl text-gray-800">Manis</span>
+                        </Link>
+                    )}
+                    {isMinimized && (
+                        <Link href="/">
+                            <ApplicationLogo className="block h-8 w-auto fill-current text-indigo-600" />
+                        </Link>
+                    )}
+
+                    <button
+                        onClick={() => setIsMinimized(!isMinimized)}
+                        className={`p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 transition-colors ${isMinimized ? 'mt-2' : ''
+                            }`}
+                    >
+                        <svg className={`h-5 w-5 transition-transform duration-300 ${isMinimized ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                        </svg>
+                    </button>
                 </div>
 
-                <div className="py-4 px-3 flex-1 overflow-y-auto">
-                    <nav className="space-y-1">
-                        <Link
+                <div className="py-6 px-3 flex-1 overflow-y-auto overflow-x-hidden">
+                    <nav className="space-y-2">
+                        <SidebarLink
                             href={route('dashboard')}
-                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${route().current('dashboard')
-                                ? 'bg-indigo-50 text-indigo-700'
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                            active={route().current('dashboard')}
+                            isMinimized={isMinimized}
+                            label="Dashboard"
                         >
+                            <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                        </SidebarLink>
 
-                            Dashboard
-                        </Link>
-
-                        <Link
+                        <SidebarLink
                             href={route('karyawan-data')}
-                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${route().current('karyawan-data')
-                                ? 'bg-indigo-50 text-indigo-700'
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                            active={route().current('karyawan-data')}
+                            isMinimized={isMinimized}
+                            label="Data Karyawan"
                         >
+                            <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </SidebarLink>
 
-                            Data Karyawan
-                        </Link>
-
-                        <Link
+                        <SidebarLink
                             href={route('karyawan-penjab')}
-                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${route().current('karyawan-penjab')
-                                ? 'bg-indigo-50 text-indigo-700'
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                            active={route().current('karyawan-penjab')}
+                            isMinimized={isMinimized}
+                            label="Penanggung Jawab"
                         >
+                            <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </SidebarLink>
 
-                            Karyawan Penanggung Jawab
-                        </Link>
+                        <div className={`mt-6 mb-2 px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider transition-opacity duration-300 ${isMinimized ? 'opacity-0' : 'opacity-100'}`}>
+                            Inventory
+                        </div>
 
-                        <Link
+                        <SidebarLink
                             href={route('inventory-data')}
-                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${route().current('inventory-data')
-                                ? 'bg-indigo-50 text-indigo-700'
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                            active={route().current('inventory-data')}
+                            isMinimized={isMinimized}
+                            label="Inventory Bub"
                         >
+                            <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                        </SidebarLink>
 
-                            Inventory Bub
-                        </Link>
-
-                        <Link
+                        <SidebarLink
                             href={route('inventory-out')}
-                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${route().current('inventory-out')
-                                ? 'bg-indigo-50 text-indigo-700'
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                            active={route().current('inventory-out')}
+                            isMinimized={isMinimized}
+                            label="Inventory Out"
                         >
+                            <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                            </svg>
+                        </SidebarLink>
 
-                            Inventory Out Bub
-                        </Link>
-
-                        <Link
+                        <SidebarLink
                             href={route('inventory-recall')}
-                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${route().current('inventory-recall')
-                                ? 'bg-indigo-50 text-indigo-700'
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                            active={route().current('inventory-recall')}
+                            isMinimized={isMinimized}
+                            label="Inventory Recall"
                         >
+                            <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </SidebarLink>
 
-                            Inventory Recall (Penarikan)
-                        </Link>
+                        <div className={`mt-6 mb-2 px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider transition-opacity duration-300 ${isMinimized ? 'opacity-0' : 'opacity-100'}`}>
+                            System
+                        </div>
 
-                        <Link
+                        <SidebarLink
                             href={route('file-tracking')}
-                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${route().current('file-tracking')
-                                ? 'bg-indigo-50 text-indigo-700'
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                            active={route().current('file-tracking')}
+                            isMinimized={isMinimized}
+                            label="File Tracking"
                         >
+                            <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </SidebarLink>
 
-                            File Tracking
-                        </Link>
-
-                        <Link
+                        <SidebarLink
                             href={route('templates.index')}
-                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${route().current('templates.index')
-                                ? 'bg-indigo-50 text-indigo-700'
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                            active={route().current('templates.index')}
+                            isMinimized={isMinimized}
+                            label="Manage Templates"
                         >
-
-                            Manage Templates
-                        </Link>
-
-
-
-
-
-                        {/* Form Link Generator - previously visible as another module perhaps */}
+                            <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                            </svg>
+                        </SidebarLink>
                     </nav>
                 </div>
 
                 {/* Optional Bottom Sidebar Profile or Info */}
-                <div className="border-t border-gray-100 p-4">
-                    <div className="text-xs text-gray-500 text-center">
-                        Manis Itjen Sistem
+                <div className="border-t border-gray-100 p-4 shrink-0 transition-all duration-300">
+                    <div className={`text-xs text-gray-500 text-center transition-opacity duration-300 ${isMinimized ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
+                        Manis Itjen Sistem &copy; 9999
                     </div>
+                    {isMinimized && (
+                        <div className="text-[10px] font-bold text-indigo-600 text-center">
+                            MANIS
+                        </div>
+                    )}
                 </div>
             </aside>
+
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-w-0">
@@ -286,3 +319,40 @@ export default function Authenticated({
         </div>
     );
 }
+
+function SidebarLink({ href, active, isMinimized, label, children }: {
+    href: string,
+    active: boolean,
+    isMinimized: boolean,
+    label: string,
+    children: React.ReactNode
+}) {
+    return (
+        <Link
+            href={href}
+            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group relative ${active
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+        >
+            <div className={`flex items-center justify-center ${isMinimized ? 'mx-auto' : 'mr-3'}`}>
+                {children}
+            </div>
+
+            <span className={`whitespace-nowrap transition-all duration-300 ${isMinimized
+                    ? 'opacity-0 w-0 overflow-hidden translate-x-4'
+                    : 'opacity-100 w-auto translate-x-0'
+                }`}>
+                {label}
+            </span>
+
+            {/* Tooltip when minimized */}
+            {isMinimized && (
+                <div className="absolute left-full ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
+                    {label}
+                </div>
+            )}
+        </Link>
+    );
+}
+
