@@ -12,8 +12,9 @@ class StaffController extends Controller
      */
     public function index()
     {
-        $staffs = Staff::latest()->paginate(10);
-        return view('staff.index', compact('staffs'));
+        return \Inertia\Inertia::render('karyawan data/index', [
+            'staffs' => Staff::latest()->get()
+        ]);
     }
 
     /**
@@ -21,7 +22,7 @@ class StaffController extends Controller
      */
     public function create()
     {
-        return view('staff.create');
+        return \Inertia\Inertia::render('karyawan data/create');
     }
 
     /**
@@ -30,16 +31,21 @@ class StaffController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'nip' => 'required|string|max:255|unique:staff,nik',
             'name' => 'required|string|max:255',
-            'nik' => 'required|string|max:255|unique:staff,nik',
+            'pangkat' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
-            'departemen' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
         ]);
 
-        Staff::create($validated);
+        Staff::create([
+            'nik' => $validated['nip'],
+            'name' => $validated['name'],
+            'pangkat' => $validated['pangkat'],
+            'jabatan' => $validated['jabatan'],
+            'departemen' => '-', // Default or optional
+        ]);
 
-        return redirect()->route('staff.index')->with('success', 'Staff member created successfully.');
+        return redirect()->route('karyawan-data')->with('success', 'Staff member created successfully.');
     }
 
     /**
@@ -64,16 +70,20 @@ class StaffController extends Controller
     public function update(Request $request, Staff $staff)
     {
         $validated = $request->validate([
+            'nip' => 'required|string|max:255|unique:staff,nik,' . $staff->id,
             'name' => 'required|string|max:255',
-            'nik' => 'required|string|max:255|unique:staff,nik,' . $staff->id,
+            'pangkat' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
-            'departemen' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
         ]);
 
-        $staff->update($validated);
+        $staff->update([
+            'nik' => $validated['nip'],
+            'name' => $validated['name'],
+            'pangkat' => $validated['pangkat'],
+            'jabatan' => $validated['jabatan'],
+        ]);
 
-        return redirect()->route('staff.index')->with('success', 'Staff member updated successfully.');
+        return redirect()->route('karyawan-data')->with('success', 'Staff member updated successfully.');
     }
 
     /**
@@ -82,6 +92,6 @@ class StaffController extends Controller
     public function destroy(Staff $staff)
     {
         $staff->delete();
-        return redirect()->route('staff.index')->with('success', 'Staff member deleted successfully.');
+        return redirect()->route('karyawan-data')->with('success', 'Staff member deleted successfully.');
     }
 }
