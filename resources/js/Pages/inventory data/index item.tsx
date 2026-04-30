@@ -82,18 +82,18 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Inventory Data Bub
+                    Inventory Data Bubruarannnnnnng
                 </h2>
             }
         >
-            <Head title="Inventory Data Bub" />
+            <Head title="Inventory Data Bubruarannnnnnng" />
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <div className="flex justify-end mb-4">
-                                <button 
+                                <button
                                     className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
                                     onClick={() => setConfirmingAddition(true)}
                                 >
@@ -129,13 +129,13 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 flex gap-2">
-                                                    <button 
+                                                    <button
                                                         className="text-blue-600 hover:text-blue-900"
                                                         onClick={() => openEditModal(inventory)}
                                                     >
                                                         Edit
                                                     </button>
-                                                    <button 
+                                                    <button
                                                         className="text-red-600 hover:text-red-900"
                                                         onClick={() => openDeleteModal(inventory)}
                                                     >

@@ -12,7 +12,7 @@ export default function Authenticated({
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
-    const [isMinimized, setIsMinimized] = useState(false);
+    const [isMinimized, setIsMinimized] = useState(true);
 
 
     return (
@@ -88,10 +88,10 @@ export default function Authenticated({
                         </div>
 
                         <SidebarLink
-                            href={route('inventory-data')}
-                            active={route().current('inventory-data')}
+                            href={route('inventory-item-data')}
+                            active={route().current('inventory-item-data')}
                             isMinimized={isMinimized}
-                            label="Inventory Bub"
+                            label="Inventory Bub1"
                         >
                             <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -99,10 +99,32 @@ export default function Authenticated({
                         </SidebarLink>
 
                         <SidebarLink
-                            href={route('inventory-out')}
-                            active={route().current('inventory-out')}
+                            href={route('inventory-kendaraan-data')}
+                            active={route().current('inventory-kendaraan-data')}
                             isMinimized={isMinimized}
-                            label="Inventory Out"
+                            label="Inventory Bub2"
+                        >
+                            <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                        </SidebarLink>
+
+                        <SidebarLink
+                            href={route('inventory-item-out')}
+                            active={route().current('inventory-item-out')}
+                            isMinimized={isMinimized}
+                            label="Inventory Out Item"
+                        >
+                            <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                            </svg>
+                        </SidebarLink>
+
+                        <SidebarLink
+                            href={route('inventory-kendaraan-out')}
+                            active={route().current('inventory-kendaraan-out')}
+                            isMinimized={isMinimized}
+                            label="Inventory Out Kendaraan"
                         >
                             <svg className="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
@@ -331,8 +353,8 @@ function SidebarLink({ href, active, isMinimized, label, children }: {
         <Link
             href={href}
             className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group relative ${active
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                 }`}
         >
             <div className={`flex items-center justify-center ${isMinimized ? 'mx-auto' : 'mr-3'}`}>
@@ -340,8 +362,8 @@ function SidebarLink({ href, active, isMinimized, label, children }: {
             </div>
 
             <span className={`whitespace-nowrap transition-all duration-300 ${isMinimized
-                    ? 'opacity-0 w-0 overflow-hidden translate-x-4'
-                    : 'opacity-100 w-auto translate-x-0'
+                ? 'opacity-0 w-0 overflow-hidden translate-x-4'
+                : 'opacity-100 w-auto translate-x-0'
                 }`}>
                 {label}
             </span>
