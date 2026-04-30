@@ -30,24 +30,39 @@ use App\Http\Controllers\PenanggungJawabController;
 Route::get('/karyawan-penjab', [PenanggungJawabController::class, 'index'])->middleware(['auth', 'verified'])->name('karyawan-penjab');
 Route::post('/karyawan-penjab', [PenanggungJawabController::class, 'store'])->middleware(['auth', 'verified'])->name('karyawan-penjab.store');
 
-use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\InventoryItemController;
+use App\Http\Controllers\InventoryKendaraanController;
 
-Route::get('/inventory-data', [InventoryController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-data');
-Route::post('/inventory-data', [InventoryController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory.store');
-Route::patch('/inventory-data/{inventory}', [InventoryController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory.update');
-Route::delete('/inventory-data/{inventory}', [InventoryController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory.destroy');
+Route::get('/inventory-item-data', [InventoryItemController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-item-data');
+Route::post('/inventory-item-data', [InventoryItemController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory-item.store');
+Route::patch('/inventory-item-data/{inventory}', [InventoryItemController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-item.update');
+Route::delete('/inventory-item-data/{inventory}', [InventoryItemController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-item.destroy');
 
-use App\Http\Controllers\InventoryOutController;
+Route::get('/inventory-kendaraan-data', [InventoryKendaraanController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-data');
+Route::post('/inventory-kendaraan-data', [InventoryKendaraanController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory-kendaraan.store');
+Route::patch('/inventory-kendaraan-data/{inventory}', [InventoryKendaraanController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-kendaraan.update');
+Route::delete('/inventory-kendaraan-data/{inventory}', [InventoryKendaraanController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-kendaraan.destroy');
+
+
+use App\Http\Controllers\InventoryItemOutController;
+use App\Http\Controllers\InventoryKendaraanOutController;
 use App\Http\Controllers\InventoryRecallController;
 use App\Http\Controllers\FileTrackingController;
 use App\Http\Controllers\TemplateController;
 
-Route::get('/inventory-out', [InventoryOutController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-out');
-Route::get('/inventory-recall', [InventoryOutController::class, 'recallIndex'])->middleware(['auth', 'verified'])->name('inventory-recall');
-Route::post('/inventory-out', [InventoryOutController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory-out.store');
-Route::patch('/inventory-out/{inventoryOut}', [InventoryOutController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-out.update');
-Route::delete('/inventory-out/{inventoryOut}', [InventoryOutController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-out.destroy');
-Route::post('/inventory-out/{inventoryOut}/upload-surat', [InventoryOutController::class, 'uploadSurat'])->middleware(['auth', 'verified'])->name('inventory-out.upload-surat');
+
+
+Route::get('/inventory-item-out', [InventoryItemOutController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-item-out');
+Route::post('/inventory-item-out', [InventoryItemOutController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory-item-out.store');
+Route::patch('/inventory-item-out/{inventoryItemOut}', [InventoryItemOutController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-item-out.update');
+Route::delete('/inventory-item-out/{inventoryItemOut}', [InventoryItemOutController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-item-out.destroy');
+Route::post('/inventory-item-out/{inventoryItemOut}/upload-surat', [InventoryItemOutController::class, 'uploadSurat'])->middleware(['auth', 'verified'])->name('inventory-item-out.upload-surat');
+
+Route::get('/inventory-kendaraan-out', [InventoryKendaraanOutController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-out');
+Route::post('/inventory-kendaraan-out', [InventoryKendaraanOutController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-out.store');
+Route::patch('/inventory-kendaraan-out/{inventoryKendaraanOut}', [InventoryKendaraanOutController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-out.update');
+Route::delete('/inventory-kendaraan-out/{inventoryKendaraanOut}', [InventoryKendaraanOutController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-out.destroy');
+Route::post('/inventory-kendaraan-out/{inventoryKendaraanOut}/upload-surat', [InventoryKendaraanOutController::class, 'uploadSurat'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-out.upload-surat');
 
 
 Route::get('/inventory-recall', [InventoryRecallController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-recall');

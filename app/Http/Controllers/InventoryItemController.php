@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
+use App\Models\InventoryItem;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class InventoryController extends Controller
+class InventoryItemController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Inertia::render('inventory data/index', [
-            'inventories' => Inventory::latest()->get()
+        return Inertia::render('inventory data/index item', [
+            'inventories' => InventoryItem::latest()->get()
         ]);
     }
 
@@ -40,15 +40,15 @@ class InventoryController extends Controller
             'condition' => 'required|string|max:255',
         ]);
 
-        Inventory::create($validated);
+        InventoryItem::create($validated);
 
-        return redirect()->route('inventory-data')->with('success', 'Item added to inventory successfully.');
+        return redirect()->route('inventory-item-data')->with('success', 'Item added to inventory successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Inventory $inventory)
+    public function show(InventoryItem $inventory)
     {
         //
     }
@@ -56,7 +56,7 @@ class InventoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Inventory $inventory)
+    public function edit(InventoryItem $inventory)
     {
         //
     }
@@ -64,7 +64,7 @@ class InventoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Inventory $inventory)
+    public function update(Request $request, InventoryItem $inventory)
     {
         $validated = $request->validate([
             'item_name' => 'required|string|max:255',
@@ -77,15 +77,15 @@ class InventoryController extends Controller
 
         $inventory->update($validated);
 
-        return redirect()->route('inventory-data')->with('success', 'Inventory item updated successfully.');
+        return redirect()->route('inventory-item-data')->with('success', 'Inventory item updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Inventory $inventory)
+    public function destroy(InventoryItem $inventory)
     {
         $inventory->delete();
-        return redirect()->route('inventory-data')->with('success', 'Inventory item deleted successfully.');
+        return redirect()->route('inventory-item-data')->with('success', 'Inventory item deleted successfully.');
     }
 }

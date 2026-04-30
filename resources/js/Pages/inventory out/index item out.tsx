@@ -8,11 +8,11 @@ import InputError from '@/Components/InputError';
 import SecondaryButton from '@/Components/SecondaryButton';
 import PrimaryButton from '@/Components/PrimaryButton';
 
-export default function InventoryOut({ inventoryOuts, inventories, staffs }: { inventoryOuts: any[], inventories: any[], staffs: any[] }) {
+export default function InventoryItemOut({ inventoryItemOuts, inventories, staffs }: { inventoryItemOuts: any[], inventories: any[], staffs: any[] }) {
     const [confirmingAddition, setConfirmingAddition] = useState(false);
     const [confirmingEdition, setConfirmingEdition] = useState(false);
     const [confirmingDeletion, setConfirmingDeletion] = useState(false);
-    const [selectedInventoryOut, setSelectedInventoryOut] = useState<any>(null);
+    const [selectedInventoryItemOut, setSelectedInventoryItemOut] = useState<any>(null);
 
     const { data, setData, post, patch, delete: destroy, processing, errors, reset } = useForm({
         inventory_id: '',
@@ -26,9 +26,9 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
         notes: '',
     });
 
-    const addInventoryOut: FormEventHandler = (e) => {
+    const addInventoryItemOut: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('inventory-out.store'), {
+        post(route('inventory-item-out.store'), {
             onSuccess: () => {
                 setConfirmingAddition(false);
                 reset();
@@ -36,9 +36,9 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
         });
     };
 
-    const editInventoryOut: FormEventHandler = (e) => {
+    const editInventoryItemOut: FormEventHandler = (e) => {
         e.preventDefault();
-        patch(route('inventory-out.update', selectedInventoryOut.id), {
+        patch(route('inventory-item-out.update', selectedInventoryItemOut.id), {
             onSuccess: () => {
                 setConfirmingEdition(false);
                 reset();
@@ -46,9 +46,9 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
         });
     };
 
-    const deleteInventoryOut: FormEventHandler = (e) => {
+    const deleteInventoryItemOut: FormEventHandler = (e) => {
         e.preventDefault();
-        destroy(route('inventory-out.destroy', selectedInventoryOut.id), {
+        destroy(route('inventory-item-out.destroy', selectedInventoryItemOut.id), {
             onSuccess: () => {
                 setConfirmingDeletion(false);
                 reset();
@@ -57,7 +57,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
     };
 
     const openEditModal = (io: any) => {
-        setSelectedInventoryOut(io);
+        setSelectedInventoryItemOut(io);
         setData({
             inventory_id: io.inventory_id,
             staff_id: io.staff_id || '',
@@ -73,7 +73,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
     };
 
     const openDeleteModal = (io: any) => {
-        setSelectedInventoryOut(io);
+        setSelectedInventoryItemOut(io);
         setConfirmingDeletion(true);
     };
 
@@ -87,7 +87,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
     const handleFileUpload = (id: number, file: File | undefined) => {
         if (!file) return;
 
-        router.post(route('inventory-out.upload-surat', id), {
+        router.post(route('inventory-item-out.upload-surat', id), {
             _method: 'post',
             surat_permohonan: file,
         }, {
@@ -99,11 +99,11 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Inventory Out Bub
+                    Inventory Out Item
                 </h2>
             }
         >
-            <Head title="Inventory Bub" />
+            <Head title="Inventory Item" />
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -136,7 +136,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100 border-t border-gray-100">
-                                        {inventoryOuts.map((io, index) => (
+                                        {inventoryItemOuts.map((io, index) => (
                                             <tr key={io.id} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4">{index + 1}</td>
                                                 <td className="px-6 py-4">{io.staff?.nik || '-'}</td>
@@ -204,7 +204,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
                                                 </td>
                                             </tr>
                                         ))}
-                                        {inventoryOuts.length === 0 && (
+                                        {inventoryItemOuts.length === 0 && (
                                             <tr>
                                                 <td colSpan={11} className="px-6 py-4 text-center text-gray-500">
                                                     Tidak ada data pengeluaran barang.
@@ -221,7 +221,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
 
             {/* Add Modal */}
             <Modal show={confirmingAddition} onClose={closeModal}>
-                <form onSubmit={addInventoryOut} className="p-6">
+                <form onSubmit={addInventoryItemOut} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">
                         Push Item (Pengeluaran Barang)
                     </h2>
@@ -254,11 +254,6 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
                                 min="1"
                             />
                         </div>
-
-
-
-
-
 
                     </div>
 
@@ -373,7 +368,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
 
             {/* Edit Modal */}
             <Modal show={confirmingEdition} onClose={closeModal}>
-                <form onSubmit={editInventoryOut} className="p-6">
+                <form onSubmit={editInventoryItemOut} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">
                         Edit Pengeluaran Barang
                     </h2>
@@ -445,7 +440,7 @@ export default function InventoryOut({ inventoryOuts, inventories, staffs }: { i
 
             {/* Delete Modal */}
             <Modal show={confirmingDeletion} onClose={closeModal}>
-                <form onSubmit={deleteInventoryOut} className="p-6">
+                <form onSubmit={deleteInventoryItemOut} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">
                         Hapus Pengeluaran Barang
                     </h2>

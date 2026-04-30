@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
-use App\Models\InventoryOut;
+use App\Models\InventoryKendaraan;
+use App\Models\InventoryKendaraanOut;
 use App\Models\Staff;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Validation\Rule;
 
-class InventoryOutController extends Controller
+class InventoryKendaraanOutController extends Controller
 {
     public function index()
     {
-        return Inertia::render('inventory out/index', [
-            'inventoryOuts' => InventoryOut::with(['inventory', 'staff'])->latest()->get(),
-            'inventories' => Inventory::where('quantity', '>', 0)->get(),
+        return Inertia::render('inventory out/index kendar out', [
+            'inventoryKendaraanOuts' => InventoryKendaraanOut::with(['inventory', 'staff'])->latest()->get(),
+            'inventories' => InventoryKendaraan::where('quantity', '>', 0)->get(),
             'staffs' => Staff::all()
         ]);
     }
@@ -22,8 +23,8 @@ class InventoryOutController extends Controller
     public function recallIndex()
     {
         return Inertia::render('inventory recall/index', [
-            'inventories' => Inventory::all(),
-            'borrowedItems' => InventoryOut::with(['inventory', 'staff'])->where('status', 'Borrowed')->get()
+            'inventories' => InventoryKendaraan::all(),
+            'borrowedItems' => InventoryKendaraanOut::with(['inventory', 'staff'])->where('status', 'Borrowed')->get()
         ]);
     }
 
@@ -35,7 +36,12 @@ class InventoryOutController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'inventory_id' => 'required|exists:inventories,id',
+            'inventory_id' => [
+                'required',
+                Rule::exists('inventories', 'id')->where(function ($query) {
+                    return $query->where('type_inventory', 'kendaraan');
+                }),
+            ],
             'staff_id' => 'nullable|exists:staff,id',
             'quantity' => 'required|integer|min:1',
             'date_out' => 'required|date',
@@ -46,29 +52,34 @@ class InventoryOutController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $inventory = Inventory::findOrFail($validated['inventory_id']);
-        
+        $inventory = InventoryKendaraan::findOrFail($validated['inventory_id']);
+
         if ($inventory->quantity < $validated['quantity']) {
             return back()->withErrors(['quantity' => 'Not enough stock available.'])->withInput();
         }
 
-        InventoryOut::create($validated);
-        
+        InventoryKendaraanOut::create($validated);
+
         // Deduct from inventory stock
         $inventory->decrement('quantity', $validated['quantity']);
 
-        return redirect()->route('inventory-out')->with('success', 'Inventory out recorded successfully.');
+        return redirect()->route('inventory-kendaraan-out')->with('success', 'Inventory out recorded successfully.');
     }
 
-    public function edit(InventoryOut $inventoryOut)
+    public function edit(InventoryKendaraanOut $inventoryKendaraanOut)
     {
         //
     }
 
-    public function update(Request $request, InventoryOut $inventoryOut)
+    public function update(Request $request, InventoryKendaraanOut $inventoryKendaraanOut)
     {
         $validated = $request->validate([
-            'inventory_id' => 'required|exists:inventories,id',
+            'inventory_id' => [
+                'required',
+                Rule::exists('inventories', 'id')->where(function ($query) {
+                    return $query->where('type_inventory', 'kendaraan');
+                }),
+            ],
             'staff_id' => 'nullable|exists:staff,id',
             'quantity' => 'required|integer|min:1',
             'date_out' => 'required|date',
@@ -79,12 +90,12 @@ class InventoryOutController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $oldQuantity = $inventoryOut->quantity;
-        $oldStatus = $inventoryOut->status;
+        $oldQuantity = $inventoryKendaraanOut->quantity;
+        $oldStatus = $inventoryKendaraanOut->status;
         $newQuantity = $validated['quantity'];
         $newStatus = $validated['status'];
 
-        $inventory = $inventoryOut->inventory;
+        $inventory = $inventoryKendaraanOut->inventory;
 
         // If status was Borrowed and is still Borrowed, but quantity changed
         if ($oldStatus === 'Borrowed' && $newStatus === 'Borrowed') {
@@ -109,20 +120,20 @@ class InventoryOutController extends Controller
             $inventory->decrement('quantity', $newQuantity);
         }
 
-        $inventoryOut->update($validated);
+        $inventoryKendaraanOut->update($validated);
 
         return redirect()->back()->with('success', 'Inventory transaction updated successfully.');
     }
 
-    public function destroy(InventoryOut $inventoryOut)
+    public function destroy(InventoryKendaraanOut $inventoryKendaraanOut)
     {
         // Restore quantity
-        $inventoryOut->inventory->increment('quantity', $inventoryOut->quantity);
-        $inventoryOut->delete();
-        return redirect()->route('inventory-out')->with('success', 'Inventory out record deleted.');
+        $inventoryKendaraanOut->inventory->increment('quantity', $inventoryKendaraanOut->quantity);
+        $inventoryKendaraanOut->delete();
+        return redirect()->route('inventory-kendaraan-out')->with('success', 'Inventory out record deleted.');
     }
 
-    public function uploadSurat(Request $request, InventoryOut $inventoryOut)
+    public function uploadSurat(Request $request, InventoryKendaraanOut $inventoryKendaraanOut)
     {
         $request->validate([
             'surat_permohonan' => 'required|file|mimes:pdf|max:2048',
@@ -130,12 +141,12 @@ class InventoryOutController extends Controller
 
         if ($request->hasFile('surat_permohonan')) {
             // Delete old file if exists
-            if ($inventoryOut->surat_permohonan) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($inventoryOut->surat_permohonan);
+            if ($inventoryKendaraanOut->surat_permohonan) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($inventoryKendaraanOut->surat_permohonan);
             }
 
             $path = $request->file('surat_permohonan')->store('surat_permohonan', 'public');
-            $inventoryOut->update(['surat_permohonan' => $path]);
+            $inventoryKendaraanOut->update(['surat_permohonan' => $path]);
         }
 
         return back()->with('success', 'Surat permohonan uploaded successfully.');

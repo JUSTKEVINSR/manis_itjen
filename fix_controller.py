@@ -1,34 +1,26 @@
-<?php
+import re
 
-namespace App\Http\Controllers;
+with open('app/Http/Controllers/StaffController.php', 'r') as f:
+    content = f.read()
 
-use App\Models\Staff;
-use Illuminate\Http\Request;
-
-class StaffController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+store_old = """    public function store(Request $request)
     {
-        return \Inertia\Inertia::render('karyawan data/index', [
-            'staffs' => Staff::latest()->get()
+        $validated = $request->validate([
+            'nip' => 'required|string|max:255|unique:staff,nik',
+            'name' => 'required|string|max:255',
+            'pangkat' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
         ]);
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return \Inertia\Inertia::render('karyawan data/create');
-    }
+        Staff::create([
+            'nik' => $validated['nip'],
+            'name' => $validated['name'],
+            'pangkat' => $validated['pangkat'],
+            'jabatan' => $validated['jabatan'],
+            'departemen' => '-', // Default or optional
+        ]);"""
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+store_new = """    public function store(Request $request)
     {
         $validated = $request->validate([
             'nip' => 'required|string|max:255|unique:staff,nik',
@@ -79,31 +71,25 @@ class StaffController extends Controller
             'peringkat' => $validated['peringkat'] ?? null,
             'nip_lama' => $validated['nip_lama'] ?? null,
             'departemen' => '-', // Default or optional
+        ]);"""
+
+update_old = """    public function update(Request $request, Staff $staff)
+    {
+        $validated = $request->validate([
+            'nip' => 'required|string|max:255|unique:staff,nik,' . $staff->id,
+            'name' => 'required|string|max:255',
+            'pangkat' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
         ]);
 
-        return redirect()->route('karyawan-data')->with('success', 'Staff member created successfully.');
-    }
+        $staff->update([
+            'nik' => $validated['nip'],
+            'name' => $validated['name'],
+            'pangkat' => $validated['pangkat'],
+            'jabatan' => $validated['jabatan'],
+        ]);"""
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Staff $staff)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Staff $staff)
-    {
-        return view('staff.edit', compact('staff'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Staff $staff)
+update_new = """    public function update(Request $request, Staff $staff)
     {
         $validated = $request->validate([
             'nip' => 'required|string|max:255|unique:staff,nik,' . $staff->id,
@@ -153,17 +139,10 @@ class StaffController extends Controller
             'jenis_kelamin' => $validated['jenis_kelamin'] ?? null,
             'peringkat' => $validated['peringkat'] ?? null,
             'nip_lama' => $validated['nip_lama'] ?? null,
-        ]);
+        ]);"""
 
-        return redirect()->route('karyawan-data')->with('success', 'Staff member updated successfully.');
-    }
+content = content.replace(store_old, store_new)
+content = content.replace(update_old, update_new)
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Staff $staff)
-    {
-        $staff->delete();
-        return redirect()->route('karyawan-data')->with('success', 'Staff member deleted successfully.');
-    }
-}
+with open('app/Http/Controllers/StaffController.php', 'w') as f:
+    f.write(content)
