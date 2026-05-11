@@ -21,6 +21,8 @@ Route::get('/dashboard', function () {
 use App\Http\Controllers\StaffController;
 
 Route::get('/karyawan-data', [StaffController::class, 'index'])->middleware(['auth', 'verified'])->name('karyawan-data');
+Route::get('/karyawan-data/export', [StaffController::class, 'export'])->middleware(['auth', 'verified'])->name('karyawan.export');
+Route::post('/karyawan-data/import', [StaffController::class, 'import'])->middleware(['auth', 'verified'])->name('karyawan.import');
 Route::post('/karyawan-data', [StaffController::class, 'store'])->middleware(['auth', 'verified'])->name('karyawan.store');
 Route::patch('/karyawan-data/{staff}', [StaffController::class, 'update'])->middleware(['auth', 'verified'])->name('karyawan.update');
 Route::delete('/karyawan-data/{staff}', [StaffController::class, 'destroy'])->middleware(['auth', 'verified'])->name('karyawan.destroy');
