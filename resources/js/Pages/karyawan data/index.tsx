@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { useState, FormEventHandler } from 'react';
 import TextInput from '@/Components/TextInput';
@@ -12,6 +12,10 @@ export default function DataKaryawan({ staffs }: { staffs: any[] }) {
     const [confirmingAddition, setConfirmingAddition] = useState(false);
     const [confirmingEdition, setConfirmingEdition] = useState(false);
     const [confirmingDeletion, setConfirmingDeletion] = useState(false);
+    const [confirmingImport, setConfirmingImport] = useState(false);
+    const [importFile, setImportFile] = useState<File | null>(null);
+    const [importError, setImportError] = useState<string>('');
+    const [importProcessing, setImportProcessing] = useState(false);
     const [selectedStaff, setSelectedStaff] = useState<any>(null);
 
     const { data, setData, post, patch, delete: destroy, processing, errors, reset } = useForm({
@@ -107,7 +111,33 @@ export default function DataKaryawan({ staffs }: { staffs: any[] }) {
         setConfirmingAddition(false);
         setConfirmingEdition(false);
         setConfirmingDeletion(false);
+        setConfirmingImport(false);
+        setImportFile(null);
+        setImportError('');
         reset();
+    };
+
+    const submitImport = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!importFile) {
+            setImportError('Pilih file Excel terlebih dahulu.');
+            return;
+        }
+        setImportProcessing(true);
+        const formData = new FormData();
+        formData.append('file', importFile);
+        router.post(route('karyawan.import'), formData, {
+            forceFormData: true,
+            onSuccess: () => {
+                setConfirmingImport(false);
+                setImportFile(null);
+                setImportError('');
+            },
+            onError: (errors) => {
+                setImportError(errors.file ?? 'Terjadi kesalahan saat mengimport.');
+            },
+            onFinish: () => setImportProcessing(false),
+        });
     };
 
     return (
@@ -124,7 +154,21 @@ export default function DataKaryawan({ staffs }: { staffs: any[] }) {
                 <div className="mx-auto sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-                            <div className="flex justify-end mb-4">
+                            <div className="flex justify-end mb-4 gap-2">
+                                <button
+                                    id="import-excel-btn"
+                                    className="px-4 py-2 text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 inline-flex items-center gap-1"
+                                    onClick={() => setConfirmingImport(true)}
+                                >
+                                    ⬆ Import Excel
+                                </button>
+                                <a
+                                    href={route('karyawan.export')}
+                                    className="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 inline-flex items-center gap-1"
+                                    id="export-excel-btn"
+                                >
+                                    ⬇ Export Excel
+                                </a>
                                 <button
                                     className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
                                     onClick={() => setConfirmingAddition(true)}
@@ -137,28 +181,28 @@ export default function DataKaryawan({ staffs }: { staffs: any[] }) {
                                     <thead className="bg-gray-50">
                                         <tr>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">No</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">NIP</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Name</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Tempat, Tgl Lahir</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Usia</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Pangkat Gol.Ruang</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">TMT Pangkat</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Jabatan</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">TMT Jabatan</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">N I P</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">NAMA LENGKAP</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">TEMPAT DAN TGL.LAHIR</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">USIA</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">PANGKAT GOL.RUANG</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">TMT PANGKAT</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">JABATAN</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">TMT JABATAN</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">ESELON</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Pangkat CPNS/PNS</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">PANGKAT CPNS</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">TMT CPNS</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">TMT PNS</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Gaji Pokok</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">TMT Gaji</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Tingkat Pendidikan</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Pendidikan Umum</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Diklat Struktural</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Diklat Fungsional</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Jenis Kelamin</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">NIP Lama</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">GAJI POKOK</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">TMT GAJI</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">TINGKAT PENDIDIKAN</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">PENDIDIKAN UMUM</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">DIKLAT STRUKTURAL</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">DIKLAT FUNGSIONAL</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">JENIS KELAMIN</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">PERINGKAT</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">NIP LAMA</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">Action</th>
-
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100 border-t border-gray-100">
@@ -180,10 +224,11 @@ export default function DataKaryawan({ staffs }: { staffs: any[] }) {
                                                 <td className="px-6 py-4">{staff.gaji_pokok}</td>
                                                 <td className="px-6 py-4">{staff.tmt_gaji}</td>
                                                 <td className="px-6 py-4">{staff.tingkat_pendidikan}</td>
-                                                <td className="px-6 py-4">{staff.pedidikan_umum}</td>
+                                                <td className="px-6 py-4">{staff.pendidikan_umum}</td>
                                                 <td className="px-6 py-4">{staff.diklat_struktural}</td>
                                                 <td className="px-6 py-4">{staff.diklat_fungsional}</td>
                                                 <td className="px-6 py-4">{staff.jenis_kelamin}</td>
+                                                <td className="px-6 py-4">{staff.peringkat}</td>
                                                 <td className="px-6 py-4">{staff.nip_lama}</td>
                                                 <td className="px-6 py-4 flex gap-2">
                                                     <button
@@ -513,6 +558,55 @@ export default function DataKaryawan({ staffs }: { staffs: any[] }) {
                         <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
                         <PrimaryButton className="ms-3 bg-red-600 hover:bg-red-700" disabled={processing}>
                             Hapus
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </Modal>
+
+            <Modal show={confirmingImport} onClose={closeModal}>
+                <form onSubmit={submitImport} className="p-6">
+                    <h2 className="text-lg font-medium text-gray-900">
+                        Import Data Karyawan dari Excel
+                    </h2>
+
+                    <p className="mt-1 text-sm text-gray-600">
+                        Upload file Excel (.xlsx atau .csv). Pastikan format kolom sesuai dengan template export.
+                        Jika NIP sudah ada, data akan diperbarui secara otomatis.
+                    </p>
+
+                    <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Pilih File Excel
+                        </label>
+                        <input
+                            id="import-file-input"
+                            type="file"
+                            accept=".xlsx,.xls,.csv"
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100"
+                            onChange={(e) => {
+                                setImportFile(e.target.files?.[0] ?? null);
+                                setImportError('');
+                            }}
+                        />
+                        {importFile && (
+                            <p className="mt-1 text-xs text-green-600">✓ File dipilih: {importFile.name}</p>
+                        )}
+                        {importError && (
+                            <p className="mt-1 text-xs text-red-600">{importError}</p>
+                        )}
+                    </div>
+
+                    <div className="mt-2 text-xs text-gray-400">
+                        Format kolom yang diharapkan: NO, N I P, NAMA LENGKAP, TEMPAT LAHIR, TANGGAL LAHIR, USIA, PANGKAT GOL.RUANG, TMT PANGKAT, JABATAN, TMT JABATAN, ESELON, PANGKAT CPNS, TMT CPNS, TMT PNS, GAJI POKOK, TMT GAJI, TINGKAT PENDIDIKAN, PENDIDIKAN UMUM, DIKLAT STRUKTURAL, DIKLAT FUNGSIONAL, JENIS KELAMIN, PERINGKAT, NIP LAMA
+                    </div>
+
+                    <div className="mt-6 flex justify-end">
+                        <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
+                        <PrimaryButton
+                            className="ms-3 bg-yellow-500 hover:bg-yellow-600"
+                            disabled={importProcessing}
+                        >
+                            {importProcessing ? 'Mengimport...' : 'Import'}
                         </PrimaryButton>
                     </div>
                 </form>
