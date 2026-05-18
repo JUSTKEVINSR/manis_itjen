@@ -3,27 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 
 class InventoryItem extends Model
 {
-    protected $table = 'inventories';
+    protected $table = 'inventory_items';
 
-    protected $fillable = ['item_name', 'item_code', 'category', 'quantity', 'location', 'condition', 'type_inventory'];
-
-    protected static function booted()
-    {
-        static::addGlobalScope('type_inventory', function (Builder $builder) {
-            $builder->where('type_inventory', 'item');
-        });
-
-        static::creating(function ($model) {
-            $model->type_inventory = 'item';
-        });
-    }
+    protected $fillable = [
+        'item_name', 
+        'item_code', 
+        'nup', 
+        'merk', 
+        'type', 
+        'category', 
+        'quantity', 
+        'location', 
+        'condition'
+    ];
 
     public function inventoryOuts()
     {
-        return $this->hasMany(InventoryItemOut::class);
+        return $this->hasMany(InventoryItemOut::class, 'inventory_id');
     }
 }

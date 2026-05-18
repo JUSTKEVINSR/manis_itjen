@@ -33,12 +33,20 @@ class InventoryItemController extends Controller
     {
         $validated = $request->validate([
             'item_name' => 'required|string|max:255',
-            'item_code' => 'required|string|max:255|unique:inventories,item_code',
-            'category' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:0',
+            'item_code' => 'nullable|string|max:255', // Unique constraint dropped recently
+            'nup' => 'nullable|string|max:255',
+            'merk' => 'nullable|string|max:255',
+            'type' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:255',
+            'quantity' => 'nullable|integer|min:0',
             'location' => 'nullable|string|max:255',
-            'condition' => 'required|string|max:255',
+            'condition' => 'nullable|string|max:255',
         ]);
+
+        // Provide defaults for fields not included in the frontend form to satisfy DB schema
+        $validated['category'] = $validated['category'] ?? '-';
+        $validated['quantity'] = $validated['quantity'] ?? 0;
+        $validated['condition'] = $validated['condition'] ?? 'Good';
 
         InventoryItem::create($validated);
 
@@ -68,12 +76,20 @@ class InventoryItemController extends Controller
     {
         $validated = $request->validate([
             'item_name' => 'required|string|max:255',
-            'item_code' => 'required|string|max:255|unique:inventories,item_code,' . $inventory->id,
-            'category' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:0',
+            'item_code' => 'nullable|string|max:255', // Unique constraint dropped recently
+            'nup' => 'nullable|string|max:255',
+            'merk' => 'nullable|string|max:255',
+            'type' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:255',
+            'quantity' => 'nullable|integer|min:0',
             'location' => 'nullable|string|max:255',
-            'condition' => 'required|string|max:255',
+            'condition' => 'nullable|string|max:255',
         ]);
+
+        // Provide defaults for fields not included in the frontend form to satisfy DB schema
+        $validated['category'] = $validated['category'] ?? '-';
+        $validated['quantity'] = $validated['quantity'] ?? 0;
+        $validated['condition'] = $validated['condition'] ?? 'Good';
 
         $inventory->update($validated);
 

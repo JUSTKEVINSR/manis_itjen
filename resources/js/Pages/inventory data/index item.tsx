@@ -17,6 +17,9 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
     const { data, setData, post, patch, delete: destroy, processing, errors, reset } = useForm({
         item_name: '',
         item_code: '',
+        nup: '',
+        merk: '',
+        type: '',
         category: '',
         quantity: 0,
         location: '',
@@ -25,7 +28,7 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
 
     const addInventory: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('inventory.store'), {
+        post(route('inventory-item.store'), {
             onSuccess: () => {
                 setConfirmingAddition(false);
                 reset();
@@ -35,7 +38,7 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
 
     const editInventory: FormEventHandler = (e) => {
         e.preventDefault();
-        patch(route('inventory.update', selectedInventory.id), {
+        patch(route('inventory-item.update', selectedInventory.id), {
             onSuccess: () => {
                 setConfirmingEdition(false);
                 reset();
@@ -45,7 +48,7 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
 
     const deleteInventory: FormEventHandler = (e) => {
         e.preventDefault();
-        destroy(route('inventory.destroy', selectedInventory.id), {
+        destroy(route('inventory-item.destroy', selectedInventory.id), {
             onSuccess: () => {
                 setConfirmingDeletion(false);
                 reset();
@@ -58,6 +61,9 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
         setData({
             item_name: inventory.item_name,
             item_code: inventory.item_code,
+            nup: inventory.nup || '',
+            merk: inventory.merk || '',
+            type: inventory.type || '',
             category: inventory.category,
             quantity: inventory.quantity,
             location: inventory.location || '',
@@ -92,7 +98,25 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-                            <div className="flex justify-end mb-4">
+                            <div className="flex justify-end mb-4 gap-2">
+
+                                <button
+                                    id="import-excel-btn"
+                                    className="px-4 py-2 text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 inline-flex items-center gap-1"
+                                // onClick={() => setConfirmingImport(true)}
+                                >
+                                    ⬆ Import Excel
+                                </button>
+                                <a
+                                    //href={route('inventory-item.export')}
+                                    className="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 inline-flex items-center gap-1"
+                                    id="export-excel-btn"
+                                >
+                                    ⬇ Export Excel
+                                </a>
+
+
+
                                 <button
                                     className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
                                     onClick={() => setConfirmingAddition(true)}
@@ -105,12 +129,13 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                                     <thead className="bg-gray-50">
                                         <tr>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">No</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">NIB</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Name</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Category</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Quantity</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Location</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Condition</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Kode Barang</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">NUP</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Nama Barang </th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Merk</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Type</th>
+
+
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">Action</th>
                                         </tr>
                                     </thead>
@@ -119,16 +144,10 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                                             <tr key={inventory.id} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4">{index + 1}</td>
                                                 <td className="px-6 py-4">{inventory.item_code}</td>
+                                                <td className="px-6 py-4">{inventory.nup}</td>
                                                 <td className="px-6 py-4">{inventory.item_name}</td>
-                                                <td className="px-6 py-4">{inventory.category}</td>
-                                                <td className="px-6 py-4">{inventory.quantity}</td>
-                                                <td className="px-6 py-4">{inventory.location || '-'}</td>
-                                                <td className="px-6 py-4">
-                                                    <span className={`px-2 py-1 rounded-full text-xs ${inventory.condition === 'Good' ? 'bg-green-100 text-green-800' : (inventory.condition === 'Moderate' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800')}`}>
-                                                        {inventory.condition}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 flex gap-2">
+                                                <td className="px-6 py-4">{inventory.merk}</td>
+                                                <td className="px-6 py-4">{inventory.type}</td>                                                <td className="px-6 py-4 flex gap-2">
                                                     <button
                                                         className="text-blue-600 hover:text-blue-900"
                                                         onClick={() => openEditModal(inventory)}
@@ -198,58 +217,45 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                     </div>
 
                     <div className="mt-4">
-                        <InputLabel htmlFor="category" value="Kategori" />
+                        <InputLabel htmlFor="nup" value="NUP" />
                         <TextInput
-                            id="category"
+                            id="nup"
                             type="text"
-                            value={data.category}
-                            onChange={(e) => setData('category', e.target.value)}
+                            value={data.nup}
+                            onChange={(e) => setData('nup', e.target.value)}
                             className="mt-1 block w-full"
-                            placeholder="Kategori Barang"
+                            placeholder="Nomor Urut Pendaftaran"
                         />
-                        <InputError message={errors.category} className="mt-2" />
+                        <InputError message={errors.nup} className="mt-2" />
                     </div>
 
                     <div className="mt-4">
-                        <InputLabel htmlFor="quantity" value="Jumlah" />
+                        <InputLabel htmlFor="merk" value="Merk" />
                         <TextInput
-                            id="quantity"
-                            type="number"
-                            value={data.quantity}
-                            onChange={(e) => setData('quantity', parseInt(e.target.value))}
-                            className="mt-1 block w-full"
-                            placeholder="0"
-                        />
-                        <InputError message={errors.quantity} className="mt-2" />
-                    </div>
-
-                    <div className="mt-4">
-                        <InputLabel htmlFor="location" value="Lokasi" />
-                        <TextInput
-                            id="location"
+                            id="merk"
                             type="text"
-                            value={data.location}
-                            onChange={(e) => setData('location', e.target.value)}
+                            value={data.merk}
+                            onChange={(e) => setData('merk', e.target.value)}
                             className="mt-1 block w-full"
-                            placeholder="Lokasi Penyimpanan"
+                            placeholder="Merk Barang"
                         />
-                        <InputError message={errors.location} className="mt-2" />
+                        <InputError message={errors.merk} className="mt-2" />
                     </div>
 
                     <div className="mt-4">
-                        <InputLabel htmlFor="condition" value="Kondisi" />
-                        <select
-                            id="condition"
-                            value={data.condition}
-                            onChange={(e) => setData('condition', e.target.value)}
-                            className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                        >
-                            <option value="Good">Baik</option>
-                            <option value="Moderate">Cukup</option>
-                            <option value="Poor">Rusak</option>
-                        </select>
-                        <InputError message={errors.condition} className="mt-2" />
+                        <InputLabel htmlFor="type" value="Type" />
+                        <TextInput
+                            id="type"
+                            type="text"
+                            value={data.type}
+                            onChange={(e) => setData('type', e.target.value)}
+                            className="mt-1 block w-full"
+                            placeholder="Tipe Barang"
+                        />
+                        <InputError message={errors.type} className="mt-2" />
                     </div>
+
+
 
                     <div className="mt-6 flex justify-end">
                         <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
@@ -298,57 +304,42 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                     </div>
 
                     <div className="mt-4">
-                        <InputLabel htmlFor="edit_category" value="Kategori" />
+                        <InputLabel htmlFor="edit_nup" value="NUP" />
                         <TextInput
-                            id="edit_category"
+                            id="edit_nup"
                             type="text"
-                            value={data.category}
-                            onChange={(e) => setData('category', e.target.value)}
+                            value={data.nup}
+                            onChange={(e) => setData('nup', e.target.value)}
                             className="mt-1 block w-full"
-                            placeholder="Kategori Barang"
+                            placeholder="Nomor Urut Pendaftaran"
                         />
-                        <InputError message={errors.category} className="mt-2" />
+                        <InputError message={errors.nup} className="mt-2" />
                     </div>
 
                     <div className="mt-4">
-                        <InputLabel htmlFor="edit_quantity" value="Jumlah" />
+                        <InputLabel htmlFor="edit_merk" value="Merk" />
                         <TextInput
-                            id="edit_quantity"
-                            type="number"
-                            value={data.quantity}
-                            onChange={(e) => setData('quantity', parseInt(e.target.value))}
-                            className="mt-1 block w-full"
-                            placeholder="0"
-                        />
-                        <InputError message={errors.quantity} className="mt-2" />
-                    </div>
-
-                    <div className="mt-4">
-                        <InputLabel htmlFor="edit_location" value="Lokasi" />
-                        <TextInput
-                            id="edit_location"
+                            id="edit_merk"
                             type="text"
-                            value={data.location}
-                            onChange={(e) => setData('location', e.target.value)}
+                            value={data.merk}
+                            onChange={(e) => setData('merk', e.target.value)}
                             className="mt-1 block w-full"
-                            placeholder="Lokasi Penyimpanan"
+                            placeholder="Merk Barang"
                         />
-                        <InputError message={errors.location} className="mt-2" />
+                        <InputError message={errors.merk} className="mt-2" />
                     </div>
 
                     <div className="mt-4">
-                        <InputLabel htmlFor="edit_condition" value="Kondisi" />
-                        <select
-                            id="edit_condition"
-                            value={data.condition}
-                            onChange={(e) => setData('condition', e.target.value)}
-                            className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                        >
-                            <option value="Good">Baik</option>
-                            <option value="Moderate">Cukup</option>
-                            <option value="Poor">Rusak</option>
-                        </select>
-                        <InputError message={errors.condition} className="mt-2" />
+                        <InputLabel htmlFor="edit_type" value="Type" />
+                        <TextInput
+                            id="edit_type"
+                            type="text"
+                            value={data.type}
+                            onChange={(e) => setData('type', e.target.value)}
+                            className="mt-1 block w-full"
+                            placeholder="Tipe Barang"
+                        />
+                        <InputError message={errors.type} className="mt-2" />
                     </div>
 
                     <div className="mt-6 flex justify-end">
