@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class InventoryItemOut extends Model
 {
-    protected $table = 'inventory_outs';
+    protected $table = 'inventory_item_outs';
 
     protected $fillable = [
         'inventory_id',
@@ -19,20 +19,8 @@ class InventoryItemOut extends Model
         'return_date',
         'kelengkapan',
         'status',
-        'surat_permohonan',
-        'type_inventory'
+        'surat_permohonan'
     ];
-
-    protected static function booted()
-    {
-        static::addGlobalScope('type_inventory', function (Builder $builder) {
-            $builder->where('type_inventory', 'item');
-        });
-
-        static::creating(function ($model) {
-            $model->type_inventory = 'item';
-        });
-    }
 
     public function inventory()
     {

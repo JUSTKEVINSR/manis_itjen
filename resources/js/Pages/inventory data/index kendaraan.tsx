@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
-import { useState, FormEventHandler } from 'react';
+import { useState, FormEventHandler, useRef } from 'react';
 import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
@@ -12,15 +12,26 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
     const [confirmingAddition, setConfirmingAddition] = useState(false);
     const [confirmingEdition, setConfirmingEdition] = useState(false);
     const [confirmingDeletion, setConfirmingDeletion] = useState(false);
+    const [confirmingImport, setConfirmingImport] = useState(false);
     const [selectedInventory, setSelectedInventory] = useState<any>(null);
+    const importFileRef = useRef<HTMLInputElement>(null);
+
+    const importForm = useForm({ file: null as File | null });
+
+    const importInventory: FormEventHandler = (e) => {
+        e.preventDefault();
+        importForm.post(route('inventory-kendaraan.import'), {
+            forceFormData: true,
+            onSuccess: () => {
+                setConfirmingImport(false);
+                importForm.reset();
+            },
+        });
+    };
 
     const { data, setData, post, patch, delete: destroy, processing, errors, reset } = useForm({
         item_name: '',
         item_code: '',
-        category: '',
-        quantity: 0,
-        location: '',
-        condition: 'Good',
         nup: '',
         merk: '',
         type: '',
@@ -30,7 +41,7 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
 
     const addInventory: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('inventory.store'), {
+        post(route('inventory-kendaraan.store'), {
             onSuccess: () => {
                 setConfirmingAddition(false);
                 reset();
@@ -40,7 +51,7 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
 
     const editInventory: FormEventHandler = (e) => {
         e.preventDefault();
-        patch(route('inventory.update', selectedInventory.id), {
+        patch(route('inventory-kendaraan.update', selectedInventory.id), {
             onSuccess: () => {
                 setConfirmingEdition(false);
                 reset();
@@ -50,7 +61,7 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
 
     const deleteInventory: FormEventHandler = (e) => {
         e.preventDefault();
-        destroy(route('inventory.destroy', selectedInventory.id), {
+        destroy(route('inventory-kendaraan.destroy', selectedInventory.id), {
             onSuccess: () => {
                 setConfirmingDeletion(false);
                 reset();
@@ -63,10 +74,6 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
         setData({
             item_name: inventory.item_name,
             item_code: inventory.item_code,
-            category: inventory.category,
-            quantity: inventory.quantity,
-            location: inventory.location || '',
-            condition: inventory.condition,
             nup: inventory.nup || '',
             merk: inventory.merk || '',
             type: inventory.type || '',
@@ -85,7 +92,9 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
         setConfirmingAddition(false);
         setConfirmingEdition(false);
         setConfirmingDeletion(false);
+        setConfirmingImport(false);
         reset();
+        importForm.reset();
     };
 
     return (
@@ -102,7 +111,25 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-                            <div className="flex justify-end mb-4">
+                            <div className="flex justify-end mb-4 gap-2">
+
+
+                                <button
+                                    id="import-excel-btn"
+                                    className="px-4 py-2 text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 inline-flex items-center gap-1"
+                                    onClick={() => setConfirmingImport(true)}
+                                >
+                                    ⬆ Import Excel
+                                </button>
+                                <a
+                                    href={route('inventory-kendaraan.export')}
+                                    className="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 inline-flex items-center gap-1"
+                                    id="export-excel-btn"
+                                >
+                                    ⬇ Export Excel
+                                </a>
+
+
                                 <button
                                     className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
                                     onClick={() => setConfirmingAddition(true)}
@@ -117,11 +144,12 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">No</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">Kode Barang</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">NUP</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Name</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Nama Barang </th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">Merk</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">Type</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">BPKB</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">No BPKB</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">No STNK</th>
+
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">Action</th>
                                         </tr>
                                     </thead>
@@ -180,7 +208,7 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                     </p>
 
                     <div className="mt-6">
-                        <InputLabel htmlFor="item_code" value="NIB" />
+                        <InputLabel htmlFor="item_code" value="Kode Barang" />
                         <TextInput
                             id="item_code"
                             type="text"
@@ -206,18 +234,7 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                         <InputError message={errors.item_name} className="mt-2" />
                     </div>
 
-                    <div className="mt-4">
-                        <InputLabel htmlFor="category" value="Kategori" />
-                        <TextInput
-                            id="category"
-                            type="text"
-                            value={data.category}
-                            onChange={(e) => setData('category', e.target.value)}
-                            className="mt-1 block w-full"
-                            placeholder="Kategori Barang"
-                        />
-                        <InputError message={errors.category} className="mt-2" />
-                    </div>
+
 
                     <div className="grid grid-cols-2 gap-4 mt-4">
                         <div>
@@ -285,46 +302,6 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                         </div>
                     </div>
 
-                    <div className="mt-4">
-                        <InputLabel htmlFor="quantity" value="Jumlah" />
-                        <TextInput
-                            id="quantity"
-                            type="number"
-                            value={data.quantity}
-                            onChange={(e) => setData('quantity', parseInt(e.target.value))}
-                            className="mt-1 block w-full"
-                            placeholder="0"
-                        />
-                        <InputError message={errors.quantity} className="mt-2" />
-                    </div>
-
-                    <div className="mt-4">
-                        <InputLabel htmlFor="location" value="Lokasi" />
-                        <TextInput
-                            id="location"
-                            type="text"
-                            value={data.location}
-                            onChange={(e) => setData('location', e.target.value)}
-                            className="mt-1 block w-full"
-                            placeholder="Lokasi Penyimpanan"
-                        />
-                        <InputError message={errors.location} className="mt-2" />
-                    </div>
-
-                    <div className="mt-4">
-                        <InputLabel htmlFor="condition" value="Kondisi" />
-                        <select
-                            id="condition"
-                            value={data.condition}
-                            onChange={(e) => setData('condition', e.target.value)}
-                            className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                        >
-                            <option value="Good">Baik</option>
-                            <option value="Moderate">Cukup</option>
-                            <option value="Poor">Rusak</option>
-                        </select>
-                        <InputError message={errors.condition} className="mt-2" />
-                    </div>
 
                     <div className="mt-6 flex justify-end">
                         <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
@@ -372,18 +349,7 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                         <InputError message={errors.item_name} className="mt-2" />
                     </div>
 
-                    <div className="mt-4">
-                        <InputLabel htmlFor="edit_category" value="Kategori" />
-                        <TextInput
-                            id="edit_category"
-                            type="text"
-                            value={data.category}
-                            onChange={(e) => setData('category', e.target.value)}
-                            className="mt-1 block w-full"
-                            placeholder="Kategori Barang"
-                        />
-                        <InputError message={errors.category} className="mt-2" />
-                    </div>
+
 
                     <div className="grid grid-cols-2 gap-4 mt-4">
                         <div>
@@ -451,46 +417,7 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                         </div>
                     </div>
 
-                    <div className="mt-4">
-                        <InputLabel htmlFor="edit_quantity" value="Jumlah" />
-                        <TextInput
-                            id="edit_quantity"
-                            type="number"
-                            value={data.quantity}
-                            onChange={(e) => setData('quantity', parseInt(e.target.value))}
-                            className="mt-1 block w-full"
-                            placeholder="0"
-                        />
-                        <InputError message={errors.quantity} className="mt-2" />
-                    </div>
 
-                    <div className="mt-4">
-                        <InputLabel htmlFor="edit_location" value="Lokasi" />
-                        <TextInput
-                            id="edit_location"
-                            type="text"
-                            value={data.location}
-                            onChange={(e) => setData('location', e.target.value)}
-                            className="mt-1 block w-full"
-                            placeholder="Lokasi Penyimpanan"
-                        />
-                        <InputError message={errors.location} className="mt-2" />
-                    </div>
-
-                    <div className="mt-4">
-                        <InputLabel htmlFor="edit_condition" value="Kondisi" />
-                        <select
-                            id="edit_condition"
-                            value={data.condition}
-                            onChange={(e) => setData('condition', e.target.value)}
-                            className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                        >
-                            <option value="Good">Baik</option>
-                            <option value="Moderate">Cukup</option>
-                            <option value="Poor">Rusak</option>
-                        </select>
-                        <InputError message={errors.condition} className="mt-2" />
-                    </div>
 
                     <div className="mt-6 flex justify-end">
                         <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
@@ -516,6 +443,41 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                         <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
                         <PrimaryButton className="ms-3 bg-red-600 hover:bg-red-700" disabled={processing}>
                             Hapus
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </Modal>
+
+            {/* Import Modal */}
+            <Modal show={confirmingImport} onClose={closeModal}>
+                <form onSubmit={importInventory} className="p-6">
+                    <h2 className="text-lg font-medium text-gray-900">
+                        Import Data Kendaraan dari Excel
+                    </h2>
+
+                    <p className="mt-1 text-sm text-gray-600">
+                        Upload file Excel (.xlsx) untuk mengimpor data kendaraan secara massal.
+                    </p>
+
+                    <div className="mt-6">
+                        <InputLabel htmlFor="import_file" value="File Excel" />
+                        <input
+                            id="import_file"
+                            type="file"
+                            accept=".xlsx,.xls"
+                            ref={importFileRef}
+                            onChange={(e) => importForm.setData('file', e.target.files?.[0] ?? null)}
+                            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        />
+                        {importForm.errors.file && (
+                            <p className="mt-2 text-sm text-red-600">{importForm.errors.file}</p>
+                        )}
+                    </div>
+
+                    <div className="mt-6 flex justify-end">
+                        <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
+                        <PrimaryButton className="ms-3" disabled={importForm.processing}>
+                            Import
                         </PrimaryButton>
                     </div>
                 </form>

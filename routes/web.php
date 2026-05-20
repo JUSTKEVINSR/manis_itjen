@@ -36,11 +36,15 @@ use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\InventoryKendaraanController;
 
 Route::get('/inventory-item-data', [InventoryItemController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-item-data');
+Route::get('/inventory-item-data/export', [InventoryItemController::class, 'export'])->middleware(['auth', 'verified'])->name('inventory-item.export');
+Route::post('/inventory-item-data/import', [InventoryItemController::class, 'import'])->middleware(['auth', 'verified'])->name('inventory-item.import');
 Route::post('/inventory-item-data', [InventoryItemController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory-item.store');
 Route::patch('/inventory-item-data/{inventory}', [InventoryItemController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-item.update');
 Route::delete('/inventory-item-data/{inventory}', [InventoryItemController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-item.destroy');
 
 Route::get('/inventory-kendaraan-data', [InventoryKendaraanController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-data');
+Route::get('/inventory-kendaraan-data/export', [InventoryKendaraanController::class, 'export'])->middleware(['auth', 'verified'])->name('inventory-kendaraan.export');
+Route::post('/inventory-kendaraan-data/import', [InventoryKendaraanController::class, 'import'])->middleware(['auth', 'verified'])->name('inventory-kendaraan.import');
 Route::post('/inventory-kendaraan-data', [InventoryKendaraanController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory-kendaraan.store');
 Route::patch('/inventory-kendaraan-data/{inventory}', [InventoryKendaraanController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-kendaraan.update');
 Route::delete('/inventory-kendaraan-data/{inventory}', [InventoryKendaraanController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-kendaraan.destroy');
