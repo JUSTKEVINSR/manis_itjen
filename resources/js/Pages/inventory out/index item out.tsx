@@ -237,12 +237,13 @@ export default function InventoryItemOut({ inventoryItemOuts, inventories, staff
                             >
                                 <option value="">Pilih Barang</option>
                                 {inventories.map((inv) => (
-                                    <option key={inv.id} value={inv.id}>{inv.item_name} (Stock: {inv.quantity})</option>
+                                    <option key={inv.id} value={inv.id}>{inv.item_name} | {inv.merk} - {inv.type} </option>
                                 ))}
                             </select>
-
-
+                            <InputError message={errors.inventory_id} className="mt-2" />
                         </div>
+
+                        {/*  
                         <div>
                             <InputLabel htmlFor="quantity" value="Quantity" />
                             <TextInput
@@ -253,7 +254,8 @@ export default function InventoryItemOut({ inventoryItemOuts, inventories, staff
                                 className="mt-1 block w-1/2"
                                 min="1"
                             />
-                        </div>
+                            <InputError message={errors.quantity} className="mt-2" />
+                        </div>*/}
 
                     </div>
 
@@ -307,12 +309,6 @@ export default function InventoryItemOut({ inventoryItemOuts, inventories, staff
                         </div>
 
 
-
-
-
-
-
-
                         <div className="mt-4 w-50">
                             <InputLabel htmlFor="return_date" value="Tanggal Kembali" />
                             <TextInput
@@ -342,6 +338,8 @@ export default function InventoryItemOut({ inventoryItemOuts, inventories, staff
                         <InputError message={errors.kelengkapan} className="mt-2" />
                     </div>
 
+
+                    {/* Status hidden 
                     <div className="mt-4">
                         <InputLabel htmlFor="status" value="Status" />
                         <select
@@ -356,6 +354,7 @@ export default function InventoryItemOut({ inventoryItemOuts, inventories, staff
                         </select>
                         <InputError message={errors.status} className="mt-2" />
                     </div>
+                    */}
 
                     <div className="mt-6 flex justify-end">
                         <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
@@ -382,7 +381,7 @@ export default function InventoryItemOut({ inventoryItemOuts, inventories, staff
                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                         >
                             {inventories.map((inv) => (
-                                <option key={inv.id} value={inv.id}>{inv.item_name}</option>
+                                <option key={inv.id} value={inv.id}>{inv.item_name} | {inv.merk} - {inv.type}</option>
                             ))}
                         </select>
                         <InputError message={errors.inventory_id} className="mt-2" />

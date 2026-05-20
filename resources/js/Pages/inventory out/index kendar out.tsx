@@ -125,7 +125,7 @@ export default function InventoryKendaraanOut({ inventoryKendaraanOuts, inventor
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">NIP</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">Name User</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">Jabatan</th>
-                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Name Item</th>
+                                            <th scope="col" className="px-6 py-4 font-medium text-gray-900">Kendaraan</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">Duration</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">Return Date</th>
                                             <th scope="col" className="px-6 py-4 font-medium text-gray-900">Kelengkapan</th>
@@ -142,7 +142,7 @@ export default function InventoryKendaraanOut({ inventoryKendaraanOuts, inventor
                                                 <td className="px-6 py-4">{io.staff?.nik || '-'}</td>
                                                 <td className="px-6 py-4">{io.staff?.name || 'Unknown'}</td>
                                                 <td className="px-6 py-4">{io.staff?.jabatan || '-'}</td>
-                                                <td className="px-6 py-4">{io.inventory?.item_name}</td>
+                                                <td className="px-6 py-4">{io.inventory?.merk} - {io.inventory?.type} - {io.inventory?.no_stnk}</td>
                                                 <td className="px-6 py-4">{io.duration || '-'}</td>
                                                 <td className="px-6 py-4">{io.return_date || '-'}</td>
                                                 <td className="px-6 py-4">{io.kelengkapan || '-'}</td>
@@ -223,26 +223,28 @@ export default function InventoryKendaraanOut({ inventoryKendaraanOuts, inventor
             <Modal show={confirmingAddition} onClose={closeModal}>
                 <form onSubmit={addInventoryKendaraanOut} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">
-                        Push Item (Pengeluaran Barang)
+                        Push Kendaraan (Pengeluaran Kendaraan)
                     </h2>
 
-                    <div className="grid grid-cols-2" style={{ gap: '10px' }}>
+                    <div className="grid grid-cols-1" style={{ gap: '10px' }}>
                         <div>
-                            <InputLabel htmlFor="inventory_id" value="Barang" />
+                            <InputLabel htmlFor="inventory_id" value="Kendaraan" />
                             <select
                                 id="inventory_id"
                                 value={data.inventory_id}
                                 onChange={(e) => setData('inventory_id', e.target.value)}
                                 className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             >
-                                <option value="">Pilih Barang</option>
+                                <option value="">Pilih Kendaraan</option>
                                 {inventories.map((inv) => (
-                                    <option key={inv.id} value={inv.id}>{inv.item_name} (Stock: {inv.quantity})</option>
+                                    <option key={inv.id} value={inv.id}>{inv.merk} - {inv.type} - {inv.no_stnk}</option>
                                 ))}
                             </select>
 
 
                         </div>
+
+                        {/* Quantity 
                         <div>
                             <InputLabel htmlFor="quantity" value="Quantity" />
                             <TextInput
@@ -253,12 +255,7 @@ export default function InventoryKendaraanOut({ inventoryKendaraanOuts, inventor
                                 className="mt-1 block w-1/2"
                                 min="1"
                             />
-                        </div>
-
-
-
-
-
+                        </div>*/}
 
                     </div>
 
@@ -347,6 +344,7 @@ export default function InventoryKendaraanOut({ inventoryKendaraanOuts, inventor
                         <InputError message={errors.kelengkapan} className="mt-2" />
                     </div>
 
+                    {/*  
                     <div className="mt-4">
                         <InputLabel htmlFor="status" value="Status" />
                         <select
@@ -361,6 +359,7 @@ export default function InventoryKendaraanOut({ inventoryKendaraanOuts, inventor
                         </select>
                         <InputError message={errors.status} className="mt-2" />
                     </div>
+*/}
 
                     <div className="mt-6 flex justify-end">
                         <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
@@ -387,7 +386,7 @@ export default function InventoryKendaraanOut({ inventoryKendaraanOuts, inventor
                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                         >
                             {inventories.map((inv) => (
-                                <option key={inv.id} value={inv.id}>{inv.item_name}</option>
+                                <option key={inv.id} value={inv.id}>{inv.merk} - {inv.type} - {inv.no_stnk}</option>
                             ))}
                         </select>
                         <InputError message={errors.inventory_id} className="mt-2" />

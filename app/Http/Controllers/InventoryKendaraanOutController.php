@@ -15,7 +15,7 @@ class InventoryKendaraanOutController extends Controller
     {
         return Inertia::render('inventory out/index kendar out', [
             'inventoryKendaraanOuts' => InventoryKendaraanOut::with(['inventory', 'staff'])->latest()->get(),
-            'inventories' => InventoryKendaraan::where('quantity', '>', 0)->get(),
+            'inventories' => InventoryKendaraan::all(),
             'staffs' => Staff::all()
         ]);
     }
@@ -54,7 +54,7 @@ class InventoryKendaraanOutController extends Controller
 
         $inventory = InventoryKendaraan::findOrFail($validated['inventory_id']);
 
-        if ($inventory->quantity < $validated['quantity']) {
+        if ($inventory->quantity !== null && $inventory->quantity < $validated['quantity']) {
             return back()->withErrors(['quantity' => 'Not enough stock available.'])->withInput();
         }
 
@@ -100,24 +100,30 @@ class InventoryKendaraanOutController extends Controller
         // If status was Borrowed and is still Borrowed, but quantity changed
         if ($oldStatus === 'Borrowed' && $newStatus === 'Borrowed') {
             $diff = $newQuantity - $oldQuantity;
-            if ($inventory->quantity < $diff) {
+            if ($inventory->quantity !== null && $inventory->quantity < $diff) {
                 return back()->withErrors(['quantity' => 'Not enough stock available for this modification.']);
             }
-            $inventory->decrement('quantity', $diff);
+            if ($inventory->quantity !== null) {
+                $inventory->decrement('quantity', $diff);
+            }
         }
         // If it was Borrowed and now is Returned
         elseif ($oldStatus === 'Borrowed' && $newStatus === 'Returned') {
             // First, adjust for any quantity change in the record itself (though usually people just return what they took)
             // But let's assume they return the "newQuantity" amount.
             // Actually, simple: put back the OLD quantity that was out.
-            $inventory->increment('quantity', $oldQuantity);
+            if ($inventory->quantity !== null) {
+                $inventory->increment('quantity', $oldQuantity);
+            }
         }
         // If it was Returned and now is Borrowed (re-borrowing or correction)
         elseif ($oldStatus === 'Returned' && $newStatus === 'Borrowed') {
-            if ($inventory->quantity < $newQuantity) {
+            if ($inventory->quantity !== null && $inventory->quantity < $newQuantity) {
                 return back()->withErrors(['quantity' => 'Not enough stock available to re-borrow.']);
             }
-            $inventory->decrement('quantity', $newQuantity);
+            if ($inventory->quantity !== null) {
+                $inventory->decrement('quantity', $newQuantity);
+            }
         }
 
         $inventoryKendaraanOut->update($validated);
@@ -128,7 +134,9 @@ class InventoryKendaraanOutController extends Controller
     public function destroy(InventoryKendaraanOut $inventoryKendaraanOut)
     {
         // Restore quantity
-        $inventoryKendaraanOut->inventory->increment('quantity', $inventoryKendaraanOut->quantity);
+        if ($inventoryKendaraanOut->inventory->quantity !== null) {
+            $inventoryKendaraanOut->inventory->increment('quantity', $inventoryKendaraanOut->quantity);
+        }
         $inventoryKendaraanOut->delete();
         return redirect()->route('inventory-kendaraan-out')->with('success', 'Inventory out record deleted.');
     }

@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
-import { useState, FormEventHandler } from 'react';
+import { useState, FormEventHandler, useRef } from 'react';
 import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
@@ -12,7 +12,22 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
     const [confirmingAddition, setConfirmingAddition] = useState(false);
     const [confirmingEdition, setConfirmingEdition] = useState(false);
     const [confirmingDeletion, setConfirmingDeletion] = useState(false);
+    const [confirmingImport, setConfirmingImport] = useState(false);
     const [selectedInventory, setSelectedInventory] = useState<any>(null);
+    const importFileRef = useRef<HTMLInputElement>(null);
+
+    const importForm = useForm({ file: null as File | null });
+
+    const importInventory: FormEventHandler = (e) => {
+        e.preventDefault();
+        importForm.post(route('inventory-item.import'), {
+            forceFormData: true,
+            onSuccess: () => {
+                setConfirmingImport(false);
+                importForm.reset();
+            },
+        });
+    };
 
     const { data, setData, post, patch, delete: destroy, processing, errors, reset } = useForm({
         item_name: '',
@@ -81,7 +96,9 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
         setConfirmingAddition(false);
         setConfirmingEdition(false);
         setConfirmingDeletion(false);
+        setConfirmingImport(false);
         reset();
+        importForm.reset();
     };
 
     return (
@@ -103,12 +120,12 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                                 <button
                                     id="import-excel-btn"
                                     className="px-4 py-2 text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 inline-flex items-center gap-1"
-                                // onClick={() => setConfirmingImport(true)}
+                                    onClick={() => setConfirmingImport(true)}
                                 >
                                     ⬆ Import Excel
                                 </button>
                                 <a
-                                    //href={route('inventory-item.export')}
+                                    href={route('inventory-item.export')}
                                     className="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 inline-flex items-center gap-1"
                                     id="export-excel-btn"
                                 >
@@ -366,6 +383,41 @@ export default function InventoryData({ inventories }: { inventories: any[] }) {
                         <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
                         <PrimaryButton className="ms-3 bg-red-600 hover:bg-red-700" disabled={processing}>
                             Hapus
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </Modal>
+
+            {/* Import Modal */}
+            <Modal show={confirmingImport} onClose={closeModal}>
+                <form onSubmit={importInventory} className="p-6">
+                    <h2 className="text-lg font-medium text-gray-900">
+                        Import Data Item dari Excel
+                    </h2>
+
+                    <p className="mt-1 text-sm text-gray-600">
+                        Upload file Excel (.xlsx) untuk mengimpor data item secara massal.
+                    </p>
+
+                    <div className="mt-6">
+                        <InputLabel htmlFor="import_file" value="File Excel" />
+                        <input
+                            id="import_file"
+                            type="file"
+                            accept=".xlsx,.xls"
+                            ref={importFileRef}
+                            onChange={(e) => importForm.setData('file', e.target.files?.[0] ?? null)}
+                            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        />
+                        {importForm.errors.file && (
+                            <p className="mt-2 text-sm text-red-600">{importForm.errors.file}</p>
+                        )}
+                    </div>
+
+                    <div className="mt-6 flex justify-end">
+                        <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
+                        <PrimaryButton className="ms-3" disabled={importForm.processing}>
+                            Import
                         </PrimaryButton>
                     </div>
                 </form>

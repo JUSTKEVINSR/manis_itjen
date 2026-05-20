@@ -36,6 +36,8 @@ use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\InventoryKendaraanController;
 
 Route::get('/inventory-item-data', [InventoryItemController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-item-data');
+Route::get('/inventory-item-data/export', [InventoryItemController::class, 'export'])->middleware(['auth', 'verified'])->name('inventory-item.export');
+Route::post('/inventory-item-data/import', [InventoryItemController::class, 'import'])->middleware(['auth', 'verified'])->name('inventory-item.import');
 Route::post('/inventory-item-data', [InventoryItemController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory-item.store');
 Route::patch('/inventory-item-data/{inventory}', [InventoryItemController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-item.update');
 Route::delete('/inventory-item-data/{inventory}', [InventoryItemController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-item.destroy');
