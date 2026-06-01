@@ -146,7 +146,17 @@ export default function InventoryRecall({ inventoryRecalls, inventories, staffs 
                                                 <td className="px-6 py-4">{ir.duration || '-'}</td>
                                                 <td className="px-6 py-4">{ir.return_date || '-'}</td>
                                                 <td className="px-6 py-4">{ir.kelengkapan || '-'}</td>
-                                                <td className="px-6 py-4">{ir.surat_permohonan_raw || ' disini surat permohonan raw'}</td>
+                                                <td className="px-6 py-4">
+                                                    <a 
+                                                        href={route('inventory-recall.download-raw', ir.id)} 
+                                                        className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-xs font-medium border border-gray-300"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                        </svg>
+                                                        Download Format
+                                                    </a>
+                                                </td>
                                                 <td className="px-6 py-4">
                                                     {ir.surat_permohonan ? (
                                                         <div className="flex items-center gap-2">

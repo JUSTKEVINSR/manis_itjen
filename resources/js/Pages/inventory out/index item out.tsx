@@ -142,11 +142,21 @@ export default function InventoryItemOut({ inventoryItemOuts, inventories, staff
                                                 <td className="px-6 py-4">{io.staff?.nik || '-'}</td>
                                                 <td className="px-6 py-4">{io.staff?.name || 'Unknown'}</td>
                                                 <td className="px-6 py-4">{io.staff?.jabatan || '-'}</td>
-                                                <td className="px-6 py-4">{io.inventory?.item_name}</td>
+                                                <td className="px-6 py-4" >{io.inventory?.item_name} - {io.inventory?.merk} - {io.inventory?.type} </td>
                                                 <td className="px-6 py-4">{io.duration || '-'}</td>
                                                 <td className="px-6 py-4">{io.return_date || '-'}</td>
                                                 <td className="px-6 py-4">{io.kelengkapan || '-'}</td>
-                                                <td className="px-6 py-4">{io.surat_permohonan_raw || ' disini surat permohonan raw'}</td>
+                                                <td className="px-6 py-4">
+                                                    <a 
+                                                        href={route('inventory-item-out.download-raw', io.id)} 
+                                                        className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-xs font-medium border border-gray-300"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                        </svg>
+                                                        Download Format
+                                                    </a>
+                                                </td>
                                                 <td className="px-6 py-4">
                                                     {io.surat_permohonan ? (
                                                         <div className="flex items-center gap-2">

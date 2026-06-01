@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
-use App\Models\InventoryOut;
+use App\Models\InventoryItem;
+use App\Models\InventoryItemOut;
 use App\Models\Staff;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,8 +13,8 @@ class InventoryRecallController extends Controller
     public function index()
     {
         return Inertia::render('inventory recall/index', [
-            'inventoryRecalls' => InventoryOut::with(['inventory', 'staff'])->latest()->get(),
-            'inventories' => Inventory::all(),
+            'inventoryRecalls' => InventoryItemOut::with(['inventory', 'staff'])->latest()->get(),
+            'inventories' => InventoryItem::all(),
             'staffs' => Staff::all()
         ]);
     }
@@ -27,7 +27,7 @@ class InventoryRecallController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'inventory_id' => 'required|exists:inventories,id',
+            'inventory_id' => 'required|exists:inventory_items,id',
             'staff_id' => 'nullable|exists:staff,id',
             'quantity' => 'required|integer|min:1',
             'date_out' => 'required|date',
@@ -38,29 +38,22 @@ class InventoryRecallController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $inventory = Inventory::findOrFail($validated['inventory_id']);
+        $inventory = InventoryItem::findOrFail($validated['inventory_id']);
 
-        if ($inventory->quantity < $validated['quantity']) {
-            return back()->withErrors(['quantity' => 'Not enough stock available.'])->withInput();
-        }
+        InventoryItemOut::create($validated);
 
-        InventoryOut::create($validated);
-
-        // Deduct from inventory stock
-        $inventory->decrement('quantity', $validated['quantity']);
-
-        return redirect()->route('inventory-out')->with('success', 'Inventory out recorded successfully.');
+        return redirect()->route('inventory-recall')->with('success', 'Inventory recall recorded successfully.');
     }
 
-    public function edit(InventoryOut $inventoryOut)
+    public function edit(InventoryItemOut $inventoryRecall)
     {
         //
     }
 
-    public function update(Request $request, InventoryOut $inventoryOut)
+    public function update(Request $request, InventoryItemOut $inventoryRecall)
     {
         $validated = $request->validate([
-            'inventory_id' => 'required|exists:inventories,id',
+            'inventory_id' => 'required|exists:inventory_items,id',
             'staff_id' => 'nullable|exists:staff,id',
             'quantity' => 'required|integer|min:1',
             'date_out' => 'required|date',
@@ -71,50 +64,23 @@ class InventoryRecallController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $oldQuantity = $inventoryOut->quantity;
-        $oldStatus = $inventoryOut->status;
-        $newQuantity = $validated['quantity'];
-        $newStatus = $validated['status'];
+        $inventory = $inventoryRecall->inventory;
 
-        $inventory = $inventoryOut->inventory;
+        // Quantity tracking is disabled.
 
-        // If status was Borrowed and is still Borrowed, but quantity changed
-        if ($oldStatus === 'Borrowed' && $newStatus === 'Borrowed') {
-            $diff = $newQuantity - $oldQuantity;
-            if ($inventory->quantity < $diff) {
-                return back()->withErrors(['quantity' => 'Not enough stock available for this modification.']);
-            }
-            $inventory->decrement('quantity', $diff);
-        }
-        // If it was Borrowed and now is Returned
-        elseif ($oldStatus === 'Borrowed' && $newStatus === 'Returned') {
-            // First, adjust for any quantity change in the record itself (though usually people just return what they took)
-            // But let's assume they return the "newQuantity" amount.
-            // Actually, simple: put back the OLD quantity that was out.
-            $inventory->increment('quantity', $oldQuantity);
-        }
-        // If it was Returned and now is Borrowed (re-borrowing or correction)
-        elseif ($oldStatus === 'Returned' && $newStatus === 'Borrowed') {
-            if ($inventory->quantity < $newQuantity) {
-                return back()->withErrors(['quantity' => 'Not enough stock available to re-borrow.']);
-            }
-            $inventory->decrement('quantity', $newQuantity);
-        }
-
-        $inventoryOut->update($validated);
+        $inventoryRecall->update($validated);
 
         return redirect()->back()->with('success', 'Inventory transaction updated successfully.');
     }
 
-    public function destroy(InventoryOut $inventoryOut)
+    public function destroy(InventoryItemOut $inventoryRecall)
     {
-        // Restore quantity
-        $inventoryOut->inventory->increment('quantity', $inventoryOut->quantity);
-        $inventoryOut->delete();
-        return redirect()->route('inventory-out')->with('success', 'Inventory out record deleted.');
+        // Quantity tracking is disabled.
+        $inventoryRecall->delete();
+        return redirect()->route('inventory-recall')->with('success', 'Inventory recall record deleted.');
     }
 
-    public function uploadSurat(Request $request, InventoryOut $inventoryOut)
+    public function uploadSurat(Request $request, InventoryItemOut $inventoryRecall)
     {
         $request->validate([
             'surat_permohonan' => 'required|file|mimes:pdf|max:2048',
@@ -122,14 +88,62 @@ class InventoryRecallController extends Controller
 
         if ($request->hasFile('surat_permohonan')) {
             // Delete old file if exists
-            if ($inventoryOut->surat_permohonan) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($inventoryOut->surat_permohonan);
+            if ($inventoryRecall->surat_permohonan) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($inventoryRecall->surat_permohonan);
             }
 
             $path = $request->file('surat_permohonan')->store('surat_permohonan', 'public');
-            $inventoryOut->update(['surat_permohonan' => $path]);
+            $inventoryRecall->update(['surat_permohonan' => $path]);
         }
 
         return back()->with('success', 'Surat permohonan uploaded successfully.');
+    }
+
+    public function downloadRaw(InventoryItemOut $inventoryRecall)
+    {
+        $templatePath = storage_path('app/public/templates/Test_BAST_PENARIKAN.docx');
+        
+        if (!file_exists($templatePath)) {
+            return back()->with('error', 'Template file not found.');
+        }
+
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor($templatePath);
+
+        // Define the variables to replace in the document
+        $tanggal_kata = \App\Helpers\DateHelper::toIndonesianDateWords($inventoryRecall->date_out);
+        $templateProcessor->setValue('tanggal_surat', $tanggal_kata);
+        
+        $templateProcessor->setValue('nama_pihak_2', $inventoryRecall->staff->name ?? '-');
+        $templateProcessor->setValue('nip_pihak_2', $inventoryRecall->staff->nik ?? '-');
+        $templateProcessor->setValue('jabatan_pihak_2', $inventoryRecall->staff->jabatan ?? '-');
+        
+        // Pihak pertama (Penanggung Jawab 1)
+        $penjab1 = \App\Models\PenanggungJawab::with('staff')->where('position', 1)->first();
+        $templateProcessor->setValue('nama_pihak_1', $penjab1->staff->name ?? '-');
+        $templateProcessor->setValue('nip_pihak_1', $penjab1->staff->nik ?? '-');
+        $templateProcessor->setValue('jabatan_pihak_1', $penjab1->staff->jabatan ?? '-');
+
+        // Mengetahui (Penanggung Jawab 2)
+        $penjab2 = \App\Models\PenanggungJawab::with('staff')->where('position', 2)->first();
+        $templateProcessor->setValue('nama_mengetahui', $penjab2->staff->name ?? '-');
+        $templateProcessor->setValue('nip_mengetahui', $penjab2->staff->nik ?? '-');
+        $templateProcessor->setValue('jabatan_mengetahui', $penjab2->staff->jabatan ?? '-');
+
+        $templateProcessor->setValue('no', '1');
+        $templateProcessor->setValue('jenis_barang', $inventoryRecall->inventory->item_name ?? '-');
+        $templateProcessor->setValue('merk_barang', ($inventoryRecall->inventory->merk ?? '') . ' ' . ($inventoryRecall->inventory->type ?? ''));
+        $templateProcessor->setValue('jumlah', $inventoryRecall->quantity ?? '1');
+        $templateProcessor->setValue('kelengkapan', $inventoryRecall->kelengkapan ?? '-');
+
+        $fileName = 'BAST_RECALL_' . ($inventoryRecall->staff->name ?? 'User') . '_' . time() . '.docx';
+        $tempPath = storage_path('app/public/temp/' . $fileName);
+        
+        if (!file_exists(storage_path('app/public/temp'))) {
+            mkdir(storage_path('app/public/temp'), 0777, true);
+        }
+
+        $templateProcessor->saveAs($tempPath);
+
+        return response()->download($tempPath)->deleteFileAfterSend(true);
     }
 }

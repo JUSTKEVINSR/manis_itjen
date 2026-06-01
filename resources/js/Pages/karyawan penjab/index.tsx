@@ -105,14 +105,14 @@ export default function KaryawanPenjab({ staffs, currentPenjab }: Props) {
                                     </div>
 
                                     <div className="flex-1 min-w-[300px]">
-                                        <InputLabel htmlFor="staff_select_2" value="Karyawan Penanggung Jawab 2" />
+                                        <InputLabel htmlFor="staff_select_2" value="Karyawan Mengetahui" />
                                         <select
                                             id="staff_select_2"
                                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                             value={data.staff2}
                                             onChange={(e) => setData('staff2', e.target.value)}
                                         >
-                                            <option value="">Pilih Karyawan 2...</option>
+                                            <option value="">Pilih Karyawan Mengetahui...</option>
                                             {staffs.map((staff) => (
                                                 <option key={staff.id} value={staff.id}>
                                                     {staff.name} - {staff.nik}
