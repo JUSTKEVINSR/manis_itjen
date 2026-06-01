@@ -122,4 +122,52 @@ class InventoryItemOutController extends Controller
 
         return back()->with('success', 'Surat permohonan uploaded successfully.');
     }
+
+    public function downloadRaw(InventoryItemOut $inventoryItemOut)
+    {
+        $templatePath = storage_path('app/public/templates/Test_BAST_.docx');
+        
+        if (!file_exists($templatePath)) {
+            return back()->with('error', 'Template file not found.');
+        }
+
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor($templatePath);
+
+        // Define the variables to replace in the document
+        $tanggal_kata = \App\Helpers\DateHelper::toIndonesianDateWords($inventoryItemOut->date_out);
+        $templateProcessor->setValue('tanggal_surat', $tanggal_kata);
+        
+        $templateProcessor->setValue('nama_pihak_2', $inventoryItemOut->staff->name ?? '-');
+        $templateProcessor->setValue('nip_pihak_2', $inventoryItemOut->staff->nik ?? '-');
+        $templateProcessor->setValue('jabatan_pihak_2', $inventoryItemOut->staff->jabatan ?? '-');
+        
+        // Pihak pertama (Penanggung Jawab 1)
+        $penjab1 = \App\Models\PenanggungJawab::with('staff')->where('position', 1)->first();
+        $templateProcessor->setValue('nama_pihak_1', $penjab1->staff->name ?? '-');
+        $templateProcessor->setValue('nip_pihak_1', $penjab1->staff->nik ?? '-');
+        $templateProcessor->setValue('jabatan_pihak_1', $penjab1->staff->jabatan ?? '-');
+
+        // Mengetahui (Penanggung Jawab 2)
+        $penjab2 = \App\Models\PenanggungJawab::with('staff')->where('position', 2)->first();
+        $templateProcessor->setValue('nama_mengetahui', $penjab2->staff->name ?? '-');
+        $templateProcessor->setValue('nip_mengetahui', $penjab2->staff->nik ?? '-');
+        $templateProcessor->setValue('jabatan_mengetahui', $penjab2->staff->jabatan ?? '-');
+
+        $templateProcessor->setValue('no', '1');
+        $templateProcessor->setValue('jenis_barang', $inventoryItemOut->inventory->item_name ?? '-');
+        $templateProcessor->setValue('merk_barang', ($inventoryItemOut->inventory->merk ?? '') . ' ' . ($inventoryItemOut->inventory->type ?? ''));
+        $templateProcessor->setValue('jumlah', $inventoryItemOut->quantity ?? '1');
+        $templateProcessor->setValue('kelengkapan', $inventoryItemOut->kelengkapan ?? '-');
+
+        $fileName = 'BAST_' . ($inventoryItemOut->staff->name ?? 'User') . '_' . time() . '.docx';
+        $tempPath = storage_path('app/public/temp/' . $fileName);
+        
+        if (!file_exists(storage_path('app/public/temp'))) {
+            mkdir(storage_path('app/public/temp'), 0777, true);
+        }
+
+        $templateProcessor->saveAs($tempPath);
+
+        return response()->download($tempPath)->deleteFileAfterSend(true);
+    }
 }

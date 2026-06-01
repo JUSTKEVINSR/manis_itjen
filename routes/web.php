@@ -63,12 +63,14 @@ Route::post('/inventory-item-out', [InventoryItemOutController::class, 'store'])
 Route::patch('/inventory-item-out/{inventoryItemOut}', [InventoryItemOutController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-item-out.update');
 Route::delete('/inventory-item-out/{inventoryItemOut}', [InventoryItemOutController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-item-out.destroy');
 Route::post('/inventory-item-out/{inventoryItemOut}/upload-surat', [InventoryItemOutController::class, 'uploadSurat'])->middleware(['auth', 'verified'])->name('inventory-item-out.upload-surat');
+Route::get('/inventory-item-out/{inventoryItemOut}/download-raw', [InventoryItemOutController::class, 'downloadRaw'])->middleware(['auth', 'verified'])->name('inventory-item-out.download-raw');
 
 Route::get('/inventory-kendaraan-out', [InventoryKendaraanOutController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-out');
 Route::post('/inventory-kendaraan-out', [InventoryKendaraanOutController::class, 'store'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-out.store');
 Route::patch('/inventory-kendaraan-out/{inventoryKendaraanOut}', [InventoryKendaraanOutController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-out.update');
 Route::delete('/inventory-kendaraan-out/{inventoryKendaraanOut}', [InventoryKendaraanOutController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-out.destroy');
 Route::post('/inventory-kendaraan-out/{inventoryKendaraanOut}/upload-surat', [InventoryKendaraanOutController::class, 'uploadSurat'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-out.upload-surat');
+Route::get('/inventory-kendaraan-out/{inventoryKendaraanOut}/download-raw', [InventoryKendaraanOutController::class, 'downloadRaw'])->middleware(['auth', 'verified'])->name('inventory-kendaraan-out.download-raw');
 
 
 Route::get('/inventory-recall', [InventoryRecallController::class, 'index'])->middleware(['auth', 'verified'])->name('inventory-recall');
@@ -76,6 +78,7 @@ Route::post('/inventory-recall', [InventoryRecallController::class, 'store'])->m
 Route::patch('/inventory-recall/{inventoryRecall}', [InventoryRecallController::class, 'update'])->middleware(['auth', 'verified'])->name('inventory-recall.update');
 Route::delete('/inventory-recall/{inventoryRecall}', [InventoryRecallController::class, 'destroy'])->middleware(['auth', 'verified'])->name('inventory-recall.destroy');
 Route::post('/inventory-recall/{inventoryRecall}/upload-surat', [InventoryRecallController::class, 'uploadSurat'])->middleware(['auth', 'verified'])->name('inventory-recall.upload-surat');
+Route::get('/inventory-recall/{inventoryRecall}/download-raw', [InventoryRecallController::class, 'downloadRaw'])->middleware(['auth', 'verified'])->name('inventory-recall.download-raw');
 
 
 Route::get('/file-tracking', [FileTrackingController::class, 'index'])->middleware(['auth', 'verified'])->name('file-tracking');
